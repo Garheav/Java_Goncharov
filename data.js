@@ -1,3 +1,4 @@
+// ========== ЛЕКЦИИ ==========
 const lectures = [
     { id: 1, name: "Лекция 1. Основные понятия, принципы и особенности Java", file: "Лекция 1.pdf", labFile: "Лаба 1.pdf" },
     { id: 2, name: "Лекция 2. Написание простых программ с логическими конструкциями", file: "Лекция 2.pdf", labFile: "Лаба 2.pdf" },
@@ -9,6 +10,7 @@ const lectures = [
     { id: 8, name: "Лекция 8. Методы (подпрограммы)", file: "Лекция 8.pdf", labFile: "Лаба 8.pdf" }
 ];
 
+// ========== ЛАБОРАТОРНЫЕ РАБОТЫ (без учебного плана) ==========
 const labsList = [
     { name: "Лабораторная работа 1", file: "Лаба 1.pdf", type: "lab", num: 1 },
     { name: "Лабораторная работа 2", file: "Лаба 2.pdf", type: "lab", num: 2 },
@@ -21,10 +23,13 @@ const labsList = [
     { name: "Аграрный калькулятор – Занятие 1", file: "Аграрный калькулятор занятие 1.pdf", type: "project", num: 1 },
     { name: "Аграрный калькулятор – Занятие 2", file: "Аграрный калькулятор занятие 2.pdf", type: "project", num: 2 },
     { name: "Аграрный калькулятор – Занятие 3", file: "Аграрный калькулятор занятие 3.pdf", type: "project", num: 3 },
-    { name: "Вопросы для самопроверки", file: "Вопросы.pdf", type: "theory" },
-    { name: "Учебный план курса", file: "Учебный план.pdf", type: "plan" }
+    { name: "Вопросы для самопроверки", file: "Вопросы.pdf", type: "theory" }
 ];
 
+// ========== ПАРАМЕТРЫ ТЕСТА ==========
+const TEST_DURATION_SECONDS = 2700; // 45 минут
+
+// ========== ВОПРОСЫ ТЕСТА (33 вопроса) ==========
 const testQuestions = [
     { type: "open", text: "Принцип Java, означающий «написал однажды – работает везде», называется ________.", correct: ["WORA", "Write Once Run Anywhere"], correctDisplay: "WORA (Write Once Run Anywhere)" },
     { type: "single", text: "Что входит в JDK, но отсутствует в JRE?", options: ["A) JVM", "B) Компилятор javac", "C) Стандартные библиотеки", "D) Среда выполнения"], correct: "B", correctDisplay: "B) Компилятор javac" },
@@ -56,7 +61,28 @@ const testQuestions = [
     { type: "single", text: "Как сравнить строки по содержимому?", options: ["==","equals()","compare()","="], correct: "equals()", correctDisplay: "equals()" },
     { type: "multi", text: "Верно про String:", options: ["Неизменяемы","Меняются через charAt","Примитив","StringBuilder быстрее","Ссылочный тип"], correct: ["Неизменяемы","StringBuilder быстрее","Ссылочный тип"], correctDisplay: "неизменяемы, StringBuilder быстрее, ссылочный" },
     { type: "open", text: "Метод StringBuilder для добавления – ________.", correct: ["append"], correctDisplay: "append" },
-    { type: "matching", text: "Сопоставьте понятие и описание:", pairs: [{left:"JVM",right:"Виртуальная машина"},{left:"JDK",right:"Java Development Kit"},{left:"JRE",right:"Среда выполнения"},{left:"WORA",right:"Write Once Run Anywhere"}], correctDisplay: "JVM→Виртуальная машина; JDK→Kit; JRE→Среда; WORA→Write Once" },
-    { type: "matching2", text: "Сопоставьте тип и размер:", pairs: [{left:"int",right:"4 байта"},{left:"double",right:"8 байт"},{left:"char",right:"2 байта"},{left:"long",right:"8 байт"},{left:"byte",right:"1 байт"}], correctDisplay: "int→4; double→8; char→2; long→8; byte→1" },
+    {
+        type: "matching",
+        text: "Сопоставьте понятие и описание:",
+        pairs: [
+            { left: "JVM", right: "Виртуальная машина Java" },
+            { left: "JDK", right: "Java Development Kit" },
+            { left: "JRE", right: "Среда выполнения Java" },
+            { left: "WORA", right: "Write Once Run Anywhere" }
+        ],
+        correctDisplay: "JVM → Виртуальная машина; JDK → Kit; JRE → Среда; WORA → Write Once"
+    },
+    {
+        type: "matching2",
+        text: "Сопоставьте тип и размер:",
+        pairs: [
+            { left: "int", right: "4 байта" },
+            { left: "double", right: "8 байт" },
+            { left: "char", right: "2 байта" },
+            { left: "long", right: "8 байт" },
+            { left: "byte", right: "1 байт" }
+        ],
+        correctDisplay: "int→4; double→8; char→2; long→8; byte→1"
+    },
     { type: "open", text: "Конструкция, автоматически закрывающая ресурсы – ________.", correct: ["try-with-resources"], correctDisplay: "try-with-resources" }
 ];

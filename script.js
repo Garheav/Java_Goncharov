@@ -1,4 +1,4 @@
-// ---------- Прогресс обучения ----------
+// ========== ПРОГРЕСС ОБУЧЕНИЯ ==========
 let openedDocs = JSON.parse(localStorage.getItem("openedJavaDocs") || "[]");
 const allDocs = [...lectures.map(l => ({ id: `lec_${l.id}` })), ...labsList.map(l => ({ id: `lab_${l.name}` }))];
 
@@ -18,7 +18,7 @@ function updateGlobalProgress() {
     if (text) text.innerText = `Открыто ${openedDocs.length} из ${allDocs.length} документов (${progress}%)`;
 }
 
-// ---------- Рендер лекций и лабораторных ----------
+// ========== ОТРИСОВКА ЛЕКЦИЙ И ЛАБ ==========
 function renderLecturesGrid(filtered = lectures) {
     const container = document.getElementById("lecturesGrid");
     container.innerHTML = filtered.map((lec, idx) => `
@@ -37,7 +37,7 @@ function renderLabsGrid() {
     `).join('');
 }
 
-// ---------- Лекции ----------
+// ========== ЛЕКЦИИ ==========
 function openLecture(index, showLab) {
     const lec = lectures[index];
     if (!lec) return;
@@ -57,7 +57,7 @@ function prevLecture() { if (window.currentLectureIndex > 0) openLecture(window.
 function nextLecture() { if (window.currentLectureIndex+1 < lectures.length) openLecture(window.currentLectureIndex+1, false); else alert("Последняя лекция"); }
 function toggleLab() { openLecture(window.currentLectureIndex, !window.currentLectureLabMode); }
 
-// ---------- Лабораторные ----------
+// ========== ЛАБОРАТОРНЫЕ ==========
 function openLab(index) {
     const lab = labsList[index];
     markDocOpened(`lab_${lab.name}`);
@@ -71,16 +71,126 @@ function closeLabViewer() { document.getElementById("labsList").style.display = 
 function prevLab() { if (window.currentLabIndex > 0) openLab(window.currentLabIndex-1); else alert("Первая работа"); }
 function nextLab() { if (window.currentLabIndex+1 < labsList.length) openLab(window.currentLabIndex+1); else alert("Последняя работа"); }
 
-// ---------- Полноэкранный режим ----------
 function enterFullscreen(elementId) {
     const el = document.getElementById(elementId);
     if (el.requestFullscreen) el.requestFullscreen();
     else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
 }
 
-// ---------- Тест (пошаговый, отметка только если ответ не пустой) ----------
+// ========== ТЕСТ ==========
+let testActive = false;
+let timerInterval = null;
+let remainingSeconds = TEST_DURATION_SECONDS;
 let currentQuestionIndex = 0;
 let userAnswers = [];
+
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+function updateTimerDisplay() {
+    const timerSpan = document.getElementById("timerSpan");
+    if (timerSpan) {
+        timerSpan.innerText = formatTime(remainingSeconds);
+        if (remainingSeconds <= 60) {
+            timerSpan.classList.add("timer-danger");
+        } else {
+            timerSpan.classList.remove("timer-danger");
+        }
+    }
+}
+
+function finishTest() {
+    if (timerInterval) clearInterval(timerInterval);
+    if (testActive) {
+        testActive = false;
+        finalizeTest();
+    }
+}
+
+function startTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        if (!testActive) return;
+        if (remainingSeconds <= 1) {
+            remainingSeconds = 0;
+            updateTimerDisplay();
+            finishTest();
+        } else {
+            remainingSeconds--;
+            updateTimerDisplay();
+        }
+    }, 1000);
+}
+
+function renderTestStartPage() {
+    const container = document.getElementById("testContainer");
+    container.innerHTML = `
+        <div class="test-start">
+            <h2>📝 Итоговый тест по курсу Java</h2>
+            <p>Перед прохождением теста рекомендуется полностью изучить курс: лекции, лабораторные работы и проект «Аграрный калькулятор».</p>
+            <p><strong>Правила:</strong></p>
+            <ul>
+                <li>Тест состоит из 33 вопросов (открытые, одиночный выбор, множественный выбор, сопоставления).</li>
+                <li>На выполнение отводится <strong>45 минут</strong>.</li>
+                <li>После истечения времени тест завершится автоматически, будут показаны результаты.</li>
+                <li>Вы можете сохранить результат в файл и посмотреть правильные ответы.</li>
+                <li>Отвеченные вопросы отмечаются зелёным цветом.</li>
+            </ul>
+            <button class="start-test-btn" id="startTestBtn"><i class="fas fa-play"></i> Начать тестирование</button>
+        </div>
+    `;
+    document.getElementById("startTestBtn")?.addEventListener("click", () => {
+        startTest();
+    });
+}
+
+function startTest() {
+    testActive = true;
+    remainingSeconds = TEST_DURATION_SECONDS;
+    userAnswers = [];
+    currentQuestionIndex = 0;
+    renderTestQuestions();
+    startTimer();
+}
+
+function renderTestQuestions() {
+    const container = document.getElementById("testContainer");
+    container.innerHTML = `
+        <div class="test-wrapper">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div class="timer-area">
+                    <i class="fas fa-hourglass-half"></i> Осталось: <span id="timerSpan">${formatTime(remainingSeconds)}</span>
+                </div>
+                <button id="abortTestBtn" class="btn-secondary" style="background: #6c757d;">❌ Прервать тест</button>
+            </div>
+            <div class="test-questions-bar">
+                <div class="question-list-horizontal" id="questionListHorizontal"></div>
+            </div>
+            <div class="q-main">
+                <div id="qContent"></div>
+                <div class="test-nav">
+                    <button id="prevQBtn" class="nav-btn"><i class="fas fa-arrow-left"></i> Назад</button>
+                    <button id="nextQBtn" class="nav-btn">Далее <i class="fas fa-arrow-right"></i></button>
+                </div>
+                <div id="testResultArea"></div>
+            </div>
+        </div>
+    `;
+    renderQuestionBar();
+    loadQuestion(currentQuestionIndex);
+    document.getElementById("prevQBtn").addEventListener("click", () => navigateQuestion(-1));
+    document.getElementById("nextQBtn").addEventListener("click", () => navigateQuestion(1));
+    document.getElementById("abortTestBtn").addEventListener("click", () => {
+        if (confirm("Вы уверены, что хотите прервать тест? Прогресс не сохранится.")) {
+            if (timerInterval) clearInterval(timerInterval);
+            testActive = false;
+            renderTestStartPage();
+        }
+    });
+}
 
 function isQuestionAnswered(idx) {
     const q = testQuestions[idx];
@@ -196,11 +306,13 @@ function navigateQuestion(delta) {
         loadQuestion(currentQuestionIndex);
         renderQuestionBar();
     } else if (newIdx === testQuestions.length) {
-        finalizeTest();
+        finishTest();
     }
 }
 
 function finalizeTest() {
+    if (timerInterval) clearInterval(timerInterval);
+    testActive = false;
     saveCurrentAnswer();
     let correctCount = 0;
     for (let i = 0; i < testQuestions.length; i++) {
@@ -221,22 +333,36 @@ function finalizeTest() {
             }
             if (ok) isCor = true;
         }
-        if (isCor) { userAnswers[i].isCorrect = true; correctCount++; }
-        else if (userAnswers[i]) userAnswers[i].isCorrect = false;
+        if (isCor) {
+            if (userAnswers[i]) userAnswers[i].isCorrect = true;
+            correctCount++;
+        } else if (userAnswers[i]) {
+            userAnswers[i].isCorrect = false;
+        }
     }
     const percent = Math.round(correctCount / testQuestions.length * 100);
-    let grade = percent>=75 ? "5 (отлично)" : percent>=65 ? "4 (хорошо)" : percent>=51 ? "3 (удовлетворительно)" : "2 (неудовлетворительно)";
-    document.getElementById("testResultArea").innerHTML = `
-        <div class="result-area">
-            <div class="score">${correctCount} из ${testQuestions.length}</div>
-            <div>Процент: ${percent}%</div>
-            <div>Оценка: ${grade}</div>
-            <button id="showAnswersBtn" class="btn-primary"><i class="fas fa-list"></i> Показать правильные ответы</button>
-            <button id="saveResultBtn" class="btn-secondary"><i class="fas fa-save"></i> Сохранить результат</button>
+    let grade = percent >= 75 ? "5 (отлично)" : percent >= 65 ? "4 (хорошо)" : percent >= 51 ? "3 (удовлетворительно)" : "2 (неудовлетворительно)";
+    const container = document.getElementById("testContainer");
+    container.innerHTML = `
+        <div class="test-wrapper">
+            <div class="q-main">
+                <div class="result-area">
+                    <div class="score">${correctCount} из ${testQuestions.length}</div>
+                    <div>Процент: ${percent}%</div>
+                    <div>Оценка: ${grade}</div>
+                    <button id="showAnswersBtn" class="btn-primary"><i class="fas fa-list"></i> Показать правильные ответы</button>
+                    <button id="saveResultBtn" class="btn-secondary"><i class="fas fa-save"></i> Сохранить результат</button>
+                    <button id="restartTestBtn" class="btn-secondary"><i class="fas fa-redo-alt"></i> Пройти тест заново</button>
+                </div>
+            </div>
         </div>
     `;
-    document.getElementById("showAnswersBtn")?.addEventListener("click", showAnswersModal);
-    document.getElementById("saveResultBtn")?.addEventListener("click", saveTestResult);
+    document.getElementById("showAnswersBtn")?.addEventListener("click", () => showAnswersModal());
+    document.getElementById("saveResultBtn")?.addEventListener("click", () => saveTestResult(correctCount, percent, grade));
+    document.getElementById("restartTestBtn")?.addEventListener("click", () => {
+        if (timerInterval) clearInterval(timerInterval);
+        renderTestStartPage();
+    });
 }
 
 function normalize(s) { return s.trim().toLowerCase().replace(/[^a-zа-я0-9]/g, ''); }
@@ -258,43 +384,17 @@ function showAnswersModal() {
     document.getElementById("answersModal").style.display = "flex";
 }
 
-function saveTestResult() {
-    const scoreDiv = document.querySelector("#testResultArea .score");
-    if (!scoreDiv) { alert("Сначала завершите тест!"); return; }
-    const scoreText = scoreDiv.innerText;
-    const percentDiv = document.querySelector("#testResultArea div:nth-child(2)")?.innerText || "";
-    const gradeDiv = document.querySelector("#testResultArea div:nth-child(3)")?.innerText || "";
-    const content = `Результат теста по Java\n${scoreText}\n${percentDiv}\n${gradeDiv}\nДата: ${new Date().toLocaleString()}`;
+function saveTestResult(correctCount, percent, grade) {
+    const content = `Результат теста по Java\n${correctCount} из ${testQuestions.length}\nПроцент: ${percent}%\nОценка: ${grade}\nДата: ${new Date().toLocaleString()}`;
     const blob = new Blob([content], {type: "text/plain"});
     saveAs(blob, "результат_теста_java.txt");
 }
 
-function renderTest() {
-    const container = document.getElementById("testContainer");
-    container.innerHTML = `
-        <div class="test-wrapper">
-            <div class="test-questions-bar">
-                <div class="question-list-horizontal" id="questionListHorizontal"></div>
-            </div>
-            <div class="q-main">
-                <div id="qContent"></div>
-                <div class="test-nav">
-                    <button id="prevQBtn" class="nav-btn"><i class="fas fa-arrow-left"></i> Назад</button>
-                    <button id="nextQBtn" class="nav-btn">Далее <i class="fas fa-arrow-right"></i></button>
-                </div>
-                <div id="testResultArea"></div>
-            </div>
-        </div>
-    `;
-    currentQuestionIndex = 0;
-    userAnswers = [];
-    renderQuestionBar();
-    loadQuestion(0);
-    document.getElementById("prevQBtn").addEventListener("click", () => navigateQuestion(-1));
-    document.getElementById("nextQBtn").addEventListener("click", () => navigateQuestion(1));
+function initTest() {
+    renderTestStartPage();
 }
 
-// ---------- Поиск лекций ----------
+// ========== ПОИСК ЛЕКЦИЙ ==========
 document.getElementById("lectureSearch")?.addEventListener("input", (e) => {
     const val = e.target.value.toLowerCase();
     const filtered = lectures.filter(l => l.name.toLowerCase().includes(val));
@@ -305,18 +405,21 @@ document.getElementById("clearLectureSearch")?.addEventListener("click", () => {
     renderLecturesGrid(lectures);
 });
 
-// ---------- Вкладки ----------
+// ========== ВКЛАДКИ ==========
 function showTab(tabId) {
     document.querySelectorAll('.content-pane').forEach(p => p.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
+    if (tabId === "test") {
+        initTest();
+    }
 }
 document.querySelectorAll(".tab-btn").forEach(btn => {
     btn.addEventListener("click", () => showTab(btn.dataset.tab));
 });
 
-// ---------- Тёмная/светлая тема ----------
+// ========== ТЁМНАЯ/СВЕТЛАЯ ТЕМА ==========
 document.getElementById("themeToggle")?.addEventListener("click", () => {
     document.body.classList.toggle("light-theme");
     const icon = document.querySelector("#themeToggle i");
@@ -329,19 +432,7 @@ document.getElementById("themeToggle")?.addEventListener("click", () => {
     }
 });
 
-// ---------- Инициализация и обработчики ----------
-window.renderTest = renderTest;
-window.openLecture = openLecture;
-window.openLab = openLab;
-window.prevLecture = prevLecture;
-window.nextLecture = nextLecture;
-window.prevLab = prevLab;
-window.nextLab = nextLab;
-window.toggleLab = toggleLab;
-window.closeLectureViewer = closeLectureViewer;
-window.closeLabViewer = closeLabViewer;
-window.enterFullscreen = enterFullscreen;
-
+// ========== ПРОЧИЕ ОБРАБОТЧИКИ ==========
 document.getElementById("prevLectureBtn")?.addEventListener("click", prevLecture);
 document.getElementById("nextLectureBtn")?.addEventListener("click", nextLecture);
 document.getElementById("openLabFromLecture")?.addEventListener("click", toggleLab);
@@ -352,55 +443,50 @@ document.getElementById("backToLabsList")?.addEventListener("click", closeLabVie
 document.getElementById("lectureFullscreen")?.addEventListener("click", () => enterFullscreen("lectureFrame"));
 document.getElementById("labFullscreen")?.addEventListener("click", () => enterFullscreen("labFrame"));
 
-// Открытие учебного плана с переключением вкладки
 document.getElementById("openPlanBtn")?.addEventListener("click", () => {
-    const planIndex = labsList.findIndex(l => l.name === "Учебный план курса");
-    if (planIndex !== -1) {
-        showTab("labs");
-        openLab(planIndex);
-    } else {
-        alert("Учебный план не найден");
-    }
+    window.open("Учебный план.pdf", "_blank");
 });
 
-// Кнопка скачивания всех материалов (ZIP)
 document.getElementById("downloadAllBtn")?.addEventListener("click", async () => {
-    try {
-        const zip = new JSZip();
-        const filesSet = new Set([...lectures.map(l => l.file), ...labsList.map(l => l.file), "Учебный план.pdf"]);
-        let loaded = 0;
-        for (let file of filesSet) {
-            try {
-                const response = await fetch(file);
-                if (response.ok) {
-                    const blob = await response.blob();
-                    zip.file(file, blob);
-                    loaded++;
-                } else {
-                    console.warn(`Файл не найден: ${file}`);
-                }
-            } catch (e) {
-                console.warn(`Ошибка загрузки ${file}:`, e);
+    const zip = new JSZip();
+    const filesSet = new Set([...lectures.map(l => l.file), ...labsList.map(l => l.file), "Учебный план.pdf"]);
+    let loaded = false;
+    for (let file of filesSet) {
+        try {
+            const response = await fetch(file);
+            if (response.ok) {
+                const blob = await response.blob();
+                zip.file(file, blob);
+                loaded = true;
             }
-        }
-        if (loaded === 0) {
-            alert("Не удалось загрузить ни одного файла. Убедитесь, что PDF-файлы находятся в той же папке, что и index.html.");
-            return;
-        }
-        const content = await zip.generateAsync({ type: "blob" });
-        saveAs(content, "java_course_materials.zip");
-    } catch (err) {
-        console.error(err);
-        alert("Ошибка создания архива. Проверьте консоль.");
+        } catch(e) {}
     }
+    if (!loaded) {
+        alert("Не удалось загрузить ни одного файла. Убедитесь, что PDF-файлы находятся в папке с сайтом.");
+        return;
+    }
+    const content = await zip.generateAsync({type:"blob"});
+    saveAs(content, "java_course_materials.zip");
 });
 
 document.querySelector(".close-modal-btn")?.addEventListener("click", () => document.getElementById("answersModal").style.display = "none");
 
+// ========== ИНИЦИАЛИЗАЦИЯ ==========
 renderLecturesGrid(lectures);
 renderLabsGrid();
-renderTest();
+initTest();
 updateGlobalProgress();
+
+window.openLecture = openLecture;
+window.openLab = openLab;
+window.prevLecture = prevLecture;
+window.nextLecture = nextLecture;
+window.prevLab = prevLab;
+window.nextLab = nextLab;
+window.toggleLab = toggleLab;
+window.closeLectureViewer = closeLectureViewer;
+window.closeLabViewer = closeLabViewer;
+window.enterFullscreen = enterFullscreen;
 
 function escapeHtml(str) {
     if (!str) return '';
