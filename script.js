@@ -1,188 +1,132 @@
-/* ===== ТЕМА ===== */
-function toggleTheme() {
-    document.body.classList.toggle('light-theme');
-    const isLight = document.body.classList.contains('light-theme');
-    localStorage.setItem('theme', isLight ? 'light' : 'dark');
-    document.querySelectorAll('.theme-toggle i').forEach(icon => {
-        icon.className = isLight ? 'fas fa-sun' : 'fas fa-moon';
-    });
+/* ============ ПЕРЕКЛЮЧЕНИЕ РАЗДЕЛОВ ============ */
+function showJavaApp() {
+    document.getElementById('landingScreen').style.display = 'none';
+    document.getElementById('javaApp').style.display = 'block';
+    document.getElementById('accountingApp').style.display = 'none';
+    document.getElementById('backToLandingBtn').style.display = 'block';
+    window.scrollTo(0, 0);
+    initJavaTest();
 }
 
-(function restoreTheme() {
-    const saved = localStorage.getItem('theme');
-    if (saved === 'light') {
-        document.body.classList.add('light-theme');
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.theme-toggle i').forEach(icon => {
-                icon.className = 'fas fa-sun';
-            });
-        });
-    }
-})();
-
-/* ===== ПЕРЕКЛЮЧЕНИЕ НАПРАВЛЕНИЙ ===== */
-function selectDirection(direction) {
+function showAccountingApp() {
     document.getElementById('landingScreen').style.display = 'none';
     document.getElementById('javaApp').style.display = 'none';
-    document.getElementById('accountingApp').style.display = 'none';
-
-    if (direction === 'java') {
-        document.getElementById('javaApp').style.display = 'block';
-        initJavaApp();
-    } else if (direction === 'accounting') {
-        document.getElementById('accountingApp').style.display = 'block';
-        initAccountingApp();
-    }
+    document.getElementById('accountingApp').style.display = 'block';
+    document.getElementById('backToLandingBtn').style.display = 'block';
     window.scrollTo(0, 0);
+    initAccounting();
 }
 
 function backToLanding() {
     if (accTimerInterval) { clearInterval(accTimerInterval); accTimerInterval = null; }
     accTestActive = false;
-
+    document.getElementById('landingScreen').style.display = 'flex';
     document.getElementById('javaApp').style.display = 'none';
     document.getElementById('accountingApp').style.display = 'none';
-    document.getElementById('landingScreen').style.display = 'flex';
+    document.getElementById('backToLandingBtn').style.display = 'none';
     window.scrollTo(0, 0);
 }
 
-/* ===== ВКЛАДКИ ===== */
-function setupTabs(tabsContainerId, appContainerId) {
-    const tabs = document.querySelectorAll(`#${tabsContainerId} .tab-btn`);
-    const panes = document.querySelectorAll(`#${appContainerId} .content-pane`);
+/* ============ JAVA: простой тест (замени своим) ============ */
+let javaInitDone = false;
+let javaIdx = 0;
+let javaAnswers = [];
 
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            tabs.forEach(t => t.classList.remove('active'));
-            panes.forEach(p => p.classList.remove('active'));
-            tab.classList.add('active');
-            const target = document.getElementById(tab.dataset.tab);
-            if (target) target.classList.add('active');
-
-            if (tab.dataset.tab === 'java-test') renderJavaTestStart();
-            if (tab.dataset.tab === 'acc-test') renderAccTestStartPage();
-            if (tab.dataset.tab === 'acc-tasks') renderAccountingTasks();
-        });
-    });
+function initJavaTest() {
+    if (javaInitDone) return;
+    javaInitDone = true;
+    renderJavaStart();
 }
 
-/* ============================================================
-   JAVA APP (шаблон)
-   ============================================================ */
-let javaInitialized = false;
-
-function initJavaApp() {
-    if (!javaInitialized) {
-        setupTabs('javaTabs', 'javaApp');
-        javaInitialized = true;
-    }
-    renderJavaTestStart();
-}
-
-let javaCurrentQuestions = [];
-let javaUserAnswers = [];
-let javaCurrentIdx = 0;
-
-function renderJavaTestStart() {
-    const container = document.getElementById('javaTestContainer');
-    if (!container) return;
-    container.innerHTML = `
-        <div class="test-card">
-            <h2>Тест по Java</h2>
-            <p>Проверьте базовые знания языка Java.</p>
-            <p>Вопросов: ${javaQuestions.length}</p>
-            <button class="choice-btn" onclick="startJavaTest()" style="margin-top: 15px;">Начать тест</button>
-        </div>
-    `;
+function renderJavaStart() {
+    const c = document.getElementById('javaTestContainer');
+    if (!c) return;
+    c.innerHTML = `<div class="acc-test-card">
+        <p>Вопросов: ${javaQuestions.length}</p>
+        <button class="acc-btn" onclick="startJavaTest()">Начать тест</button>
+    </div>`;
 }
 
 function startJavaTest() {
-    javaCurrentQuestions = [...javaQuestions];
-    javaUserAnswers = new Array(javaCurrentQuestions.length).fill(null);
-    javaCurrentIdx = 0;
+    javaIdx = 0;
+    javaAnswers = new Array(javaQuestions.length).fill(null);
     renderJavaQuestion();
 }
 
 function renderJavaQuestion() {
-    const container = document.getElementById('javaTestContainer');
-    const q = javaCurrentQuestions[javaCurrentIdx];
-    let html = `<div class="test-card">
-        <div class="test-header">
-            <span class="timer">Вопрос ${javaCurrentIdx + 1} из ${javaCurrentQuestions.length}</span>
-        </div>
-        <h3>${q.text}</h3>
-        <div style="margin-top: 15px;">`;
+    const q = javaQuestions[javaIdx];
+    const c = document.getElementById('javaTestContainer');
+    let html = `<div class="acc-test-card"><h3>Вопрос ${javaIdx + 1} из ${javaQuestions.length}</h3><p>${q.text}</p>`;
     q.options.forEach((opt, i) => {
-        const selected = javaUserAnswers[javaCurrentIdx] === i ? 'selected' : '';
-        html += `<label class="option-label ${selected}">
-            <input type="radio" name="java_q" value="${i}" ${javaUserAnswers[javaCurrentIdx] === i ? 'checked' : ''}
-                onchange="saveJavaAnswer(${i})">
-            <span>${opt}</span>
-        </label>`;
+        const checked = javaAnswers[javaIdx] === i;
+        html += `<label class="acc-option ${checked ? 'selected' : ''}">
+            <input type="radio" name="jq" ${checked ? 'checked' : ''} onchange="saveJavaAnswer(${i})">
+            <span>${opt}</span></label>`;
     });
-    html += `</div><div class="test-nav">
-        <button class="choice-btn" onclick="navigateJava(-1)" ${javaCurrentIdx === 0 ? 'disabled' : ''}
-            style="background: var(--card); color: var(--text); border: 1px solid var(--border);">Назад</button>
-        ${javaCurrentIdx === javaCurrentQuestions.length - 1
-            ? `<button class="choice-btn" onclick="finishJavaTest()">Завершить</button>`
-            : `<button class="choice-btn" onclick="navigateJava(1)">Далее</button>`}
+    html += `<div style="display:flex; gap:8px; margin-top:14px;">
+        <button class="acc-btn acc-btn-secondary" onclick="navJava(-1)" ${javaIdx === 0 ? 'disabled' : ''}>← Назад</button>
+        ${javaIdx === javaQuestions.length - 1
+            ? `<button class="acc-btn" onclick="finishJavaTest()">Завершить</button>`
+            : `<button class="acc-btn" onclick="navJava(1)">Далее →</button>`}
     </div></div>`;
-    container.innerHTML = html;
+    c.innerHTML = html;
 }
 
-function saveJavaAnswer(value) {
-    javaUserAnswers[javaCurrentIdx] = parseInt(value);
+function saveJavaAnswer(i) {
+    javaAnswers[javaIdx] = i;
+    document.querySelectorAll('#javaTestContainer .acc-option').forEach((l, idx) => {
+        l.classList.toggle('selected', idx === i);
+    });
 }
 
-function navigateJava(delta) {
-    const next = javaCurrentIdx + delta;
-    if (next >= 0 && next < javaCurrentQuestions.length) {
-        javaCurrentIdx = next;
-        renderJavaQuestion();
-    }
+function navJava(d) {
+    const n = javaIdx + d;
+    if (n >= 0 && n < javaQuestions.length) { javaIdx = n; renderJavaQuestion(); }
 }
 
 function finishJavaTest() {
-    let correct = 0;
-    javaCurrentQuestions.forEach((q, i) => {
-        if (javaUserAnswers[i] === q.correct) correct++;
+    let ok = 0;
+    javaQuestions.forEach((q, i) => { if (javaAnswers[i] === q.correct) ok++; });
+    const total = javaQuestions.length;
+    const score = total ? Math.round(ok / total * 100) : 0;
+    document.getElementById('javaTestContainer').innerHTML = `<div class="acc-test-card">
+        <h2>Результат</h2>
+        <p>Правильных: <strong>${ok} из ${total}</strong></p>
+        <p class="acc-score">${score}%</p>
+        <button class="acc-btn" onclick="renderJavaStart()">Пройти заново</button>
+    </div>`;
+}
+
+/* ============ УЧЁТ ЗАТРАТ ============ */
+let accInitDone = false;
+
+function initAccounting() {
+    if (accInitDone) return;
+    accInitDone = true;
+    document.querySelectorAll('#accountingApp .acc-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('#accountingApp .acc-tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('#accountingApp .acc-pane').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            const pane = document.getElementById(btn.dataset.accTab);
+            if (pane) pane.classList.add('active');
+            if (btn.dataset.accTab === 'acc-test') renderAccStart();
+            if (btn.dataset.accTab === 'acc-tasks') renderAccTasks();
+        });
     });
-    const total = javaCurrentQuestions.length;
-    const score = total ? Math.round(correct / total * 100) : 0;
-    document.getElementById('javaTestContainer').innerHTML = `
-        <div class="test-card">
-            <h2>Результат теста по Java</h2>
-            <p>Правильных ответов: <strong>${correct} из ${total}</strong></p>
-            <p class="score-big">${score}%</p>
-            <button class="choice-btn" onclick="renderJavaTestStart()">Пройти заново</button>
-        </div>
-    `;
+    renderAccTheory();
+    renderAccStart();
 }
 
-/* ============================================================
-   ACCOUNTING APP (Учёт затрат)
-   ============================================================ */
-let accountingInitialized = false;
-
-function initAccountingApp() {
-    if (!accountingInitialized) {
-        setupTabs('accountingTabs', 'accountingApp');
-        accountingInitialized = true;
-    }
-    renderAccTestStartPage();
+function renderAccTheory() {
+    const c = document.getElementById('acc-theory');
+    if (!c) return;
+    c.innerHTML = accountingTheory.map(b =>
+        `<div class="acc-block"><h3>${b.title}</h3><p>${b.text}</p></div>`
+    ).join('');
 }
 
-/* ===== УТИЛИТЫ ===== */
-function shuffleArray(array) {
-    const arr = [...array];
-    for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-}
-
-/* ===== ТЕСТ: СТАРТ ===== */
+/* --- ТЕСТ УЧЁТА --- */
 let accTestActive = false;
 let accCurrentQuestions = [];
 let accUserAnswers = [];
@@ -191,57 +135,46 @@ let accTimerInterval = null;
 let accRemainingSeconds = 1800;
 const ACC_QUESTION_COUNT = 5;
 
-function renderAccTestStartPage() {
-    const container = document.getElementById('accTestContainer');
-    if (!container) return;
-    if (accTimerInterval) { clearInterval(accTimerInterval); accTimerInterval = null; }
-    accTestActive = false;
-
-    container.innerHTML = `
-        <div class="test-card">
-            <h2>Тест: Управленческий учёт затрат в растениеводстве</h2>
-            <p>Вопросы выбираются случайным образом из базы.</p>
-            <ul>
-                <li>Типы вопросов: одиночный выбор, множественный выбор, открытый ответ.</li>
-                <li>Время на выполнение: 30 минут.</li>
-                <li>Количество вопросов: ${ACC_QUESTION_COUNT} (случайная выборка).</li>
-            </ul>
-            <button class="choice-btn" onclick="startAccTest()">Начать тест</button>
-        </div>
-    `;
+function accShuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
 }
 
-/* ===== ТЕСТ: ЗАПУСК ===== */
+function renderAccStart() {
+    const c = document.getElementById('accTestContainer');
+    if (!c) return;
+    if (accTimerInterval) { clearInterval(accTimerInterval); accTimerInterval = null; }
+    accTestActive = false;
+    c.innerHTML = `<div class="acc-test-card">
+        <h2>Тест: управленческий учёт затрат</h2>
+        <p>Вопросов: ${ACC_QUESTION_COUNT} (случайная выборка). Время: 30 мин.</p>
+        <p>Типы: одиночный, множественный выбор, открытый ответ.</p>
+        <button class="acc-btn" onclick="startAccTest()" style="margin-top:14px;">Начать тест</button>
+    </div>`;
+}
+
 function startAccTest() {
     accTestActive = true;
     accRemainingSeconds = 1800;
     accUserAnswers = [];
     accCurrentIdx = 0;
-
-    const shuffled = shuffleArray(accountingTestQuestions);
-    accCurrentQuestions = shuffled.slice(0, Math.min(ACC_QUESTION_COUNT, shuffled.length));
-
+    const sh = accShuffle(accountingTestQuestions);
+    accCurrentQuestions = sh.slice(0, Math.min(ACC_QUESTION_COUNT, sh.length));
     renderAccTestUI();
-    startAccTimer();
-}
-
-function startAccTimer() {
     if (accTimerInterval) clearInterval(accTimerInterval);
-    updateAccTimerDisplay();
     accTimerInterval = setInterval(() => {
         if (!accTestActive) return;
         accRemainingSeconds--;
-        if (accRemainingSeconds <= 0) {
-            accRemainingSeconds = 0;
-            updateAccTimerDisplay();
-            finishAccTest();
-            return;
-        }
-        updateAccTimerDisplay();
+        updateAccTimer();
+        if (accRemainingSeconds <= 0) finishAccTest();
     }, 1000);
 }
 
-function updateAccTimerDisplay() {
+function updateAccTimer() {
     const el = document.getElementById('accTimerDisplay');
     if (!el) return;
     const m = Math.floor(accRemainingSeconds / 60);
@@ -249,233 +182,166 @@ function updateAccTimerDisplay() {
     el.innerText = `Осталось: ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
-/* ===== ТЕСТ: РЕНДЕР ===== */
 function renderAccTestUI() {
-    const container = document.getElementById('accTestContainer');
-    container.innerHTML = `
-        <div class="test-card">
-            <div class="test-header">
-                <span id="accTimerDisplay" class="timer">Осталось: 30:00</span>
-                <button class="back-to-landing" onclick="abortAccTest()">Прервать тест</button>
-            </div>
-            <div id="accQuestionNav" class="question-nav"></div>
-            <div id="accQuestionContent"></div>
+    const c = document.getElementById('accTestContainer');
+    c.innerHTML = `<div class="acc-test-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <span id="accTimerDisplay" class="acc-timer">Осталось: 30:00</span>
+            <button class="acc-btn acc-btn-secondary" onclick="abortAccTest()">Прервать</button>
         </div>
-    `;
-    renderAccQuestionBar();
+        <div class="acc-qnav" id="accQuestionNav"></div>
+        <div id="accQuestionContent"></div>
+    </div>`;
+    renderAccQNav();
     loadAccQuestion(0);
 }
 
-function renderAccQuestionBar() {
-    const bar = document.getElementById('accQuestionNav');
-    if (!bar) return;
-    bar.innerHTML = accCurrentQuestions.map((_, i) => {
-        const answered = isAnswered(accUserAnswers[i]);
-        const current = i === accCurrentIdx ? 'current' : '';
-        const answeredCls = answered ? 'answered' : '';
-        return `<button class="qnav-btn ${answeredCls} ${current}" onclick="loadAccQuestion(${i})">${i + 1}</button>`;
+function renderAccQNav() {
+    const nav = document.getElementById('accQuestionNav');
+    if (!nav) return;
+    nav.innerHTML = accCurrentQuestions.map((_, i) => {
+        const ans = accUserAnswers[i];
+        const answered = ans !== undefined && ans !== null && (Array.isArray(ans) ? ans.length > 0 : String(ans).trim() !== '');
+        const cls = (i === accCurrentIdx ? 'current ' : '') + (answered ? 'answered' : '');
+        return `<button class="acc-qnav-btn ${cls}" onclick="loadAccQuestion(${i})">${i + 1}</button>`;
     }).join('');
 }
 
-function isAnswered(ans) {
-    if (ans === undefined || ans === null) return false;
-    if (Array.isArray(ans)) return ans.length > 0;
-    return String(ans).trim() !== '';
-}
-
-/* ===== ТЕСТ: ВОПРОС ===== */
 function loadAccQuestion(idx) {
     if (idx < 0 || idx >= accCurrentQuestions.length) return;
     accCurrentIdx = idx;
     const q = accCurrentQuestions[idx];
-    const content = document.getElementById('accQuestionContent');
-    if (!content) return;
-
-    let html = `<h3>Вопрос ${idx + 1}. ${q.text}</h3><div style="margin-top: 15px;">`;
-
+    const c = document.getElementById('accQuestionContent');
+    let html = `<h3>Вопрос ${idx + 1}. ${q.text}</h3><div style="margin-top:12px;">`;
     if (q.type === 'single') {
         q.options.forEach(opt => {
-            const sel = accUserAnswers[idx] === opt ? 'selected' : '';
-            html += `<label class="option-label ${sel}">
-                <input type="radio" name="acc_q_${idx}" value="${escapeAttr(opt)}"
-                    ${accUserAnswers[idx] === opt ? 'checked' : ''}
-                    onchange="saveAccAnswer(${idx}, this.value)">
-                <span>${opt}</span>
-            </label>`;
+            const checked = accUserAnswers[idx] === opt;
+            html += `<label class="acc-option ${checked ? 'selected' : ''}">
+                <input type="radio" name="accq" ${checked ? 'checked' : ''} onchange="saveAccAnswer(${idx}, this.value)" value="${esc(opt)}">
+                <span>${opt}</span></label>`;
         });
     } else if (q.type === 'multi') {
+        const arr = Array.isArray(accUserAnswers[idx]) ? accUserAnswers[idx] : [];
         q.options.forEach(opt => {
-            const arr = Array.isArray(accUserAnswers[idx]) ? accUserAnswers[idx] : [];
             const checked = arr.includes(opt);
-            const sel = checked ? 'selected' : '';
-            html += `<label class="option-label ${sel}">
-                <input type="checkbox" name="acc_q_${idx}" value="${escapeAttr(opt)}"
-                    ${checked ? 'checked' : ''}
-                    onchange="saveAccMultiAnswer(${idx}, this.value, this.checked)">
-                <span>${opt}</span>
-            </label>`;
+            html += `<label class="acc-option ${checked ? 'selected' : ''}">
+                <input type="checkbox" ${checked ? 'checked' : ''} onchange="saveAccMulti(${idx}, this.value, this.checked)" value="${esc(opt)}">
+                <span>${opt}</span></label>`;
         });
-    } else if (q.type === 'open') {
-        const val = typeof accUserAnswers[idx] === 'string' ? accUserAnswers[idx] : '';
-        html += `<input type="text" class="open-input" placeholder="Введите ответ..."
-                    value="${escapeAttr(val)}"
-                    oninput="saveAccAnswer(${idx}, this.value)">`;
+    } else {
+        const v = typeof accUserAnswers[idx] === 'string' ? accUserAnswers[idx] : '';
+        html += `<input type="text" class="acc-input" placeholder="Введите ответ..." value="${esc(v)}" oninput="saveAccAnswer(${idx}, this.value)">`;
     }
-
-    html += `</div><div class="test-nav">
-        <button class="choice-btn" onclick="navigateAccQuestion(-1)" ${idx === 0 ? 'disabled' : ''}
-            style="background: var(--card); color: var(--text); border: 1px solid var(--border);">
-            <i class="fas fa-arrow-left"></i> Назад</button>
+    html += `</div><div style="display:flex; gap:8px; margin-top:16px; flex-wrap:wrap;">
+        <button class="acc-btn acc-btn-secondary" onclick="navAcc(-1)" ${idx === 0 ? 'disabled' : ''}>← Назад</button>
         ${idx === accCurrentQuestions.length - 1
-            ? `<button class="choice-btn" onclick="finishAccTest()">Завершить тест</button>`
-            : `<button class="choice-btn" onclick="navigateAccQuestion(1)">Далее <i class="fas fa-arrow-right"></i></button>`}
+            ? `<button class="acc-btn" onclick="finishAccTest()">Завершить</button>`
+            : `<button class="acc-btn" onclick="navAcc(1)">Далее →</button>`}
     </div>`;
-
-    content.innerHTML = html;
-    renderAccQuestionBar();
-    updateAccTimerDisplay();
+    c.innerHTML = html;
+    renderAccQNav();
+    updateAccTimer();
 }
 
-function escapeAttr(s) {
+function esc(s) {
     return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-/* ===== ТЕСТ: СОХРАНЕНИЕ ОТВЕТОВ ===== */
-function saveAccAnswer(idx, value) {
-    accUserAnswers[idx] = value;
-    const q = accCurrentQuestions[idx];
-    if (q.type === 'single') {
-        const labels = document.querySelectorAll(`#accQuestionContent .option-label`);
-        labels.forEach(label => {
-            const input = label.querySelector('input');
-            if (input && input.checked) label.classList.add('selected');
-            else label.classList.remove('selected');
-        });
-    }
-    renderAccQuestionBar();
+function saveAccAnswer(idx, val) {
+    accUserAnswers[idx] = val;
+    document.querySelectorAll('#accQuestionContent .acc-option').forEach(l => {
+        const inp = l.querySelector('input');
+        l.classList.toggle('selected', inp && inp.checked);
+    });
+    renderAccQNav();
 }
 
-function saveAccMultiAnswer(idx, value, isChecked) {
+function saveAccMulti(idx, val, checked) {
     if (!Array.isArray(accUserAnswers[idx])) accUserAnswers[idx] = [];
     const arr = accUserAnswers[idx];
-    if (isChecked) {
-        if (!arr.includes(value)) arr.push(value);
-    } else {
-        const pos = arr.indexOf(value);
-        if (pos > -1) arr.splice(pos, 1);
-    }
-    const labels = document.querySelectorAll(`#accQuestionContent .option-label`);
-    labels.forEach(label => {
-        const input = label.querySelector('input');
-        if (input && input.checked) label.classList.add('selected');
-        else label.classList.remove('selected');
+    if (checked) { if (!arr.includes(val)) arr.push(val); }
+    else { const p = arr.indexOf(val); if (p > -1) arr.splice(p, 1); }
+    document.querySelectorAll('#accQuestionContent .acc-option').forEach(l => {
+        const inp = l.querySelector('input');
+        l.classList.toggle('selected', inp && inp.checked);
     });
-    renderAccQuestionBar();
+    renderAccQNav();
 }
 
-/* ===== ТЕСТ: НАВИГАЦИЯ ===== */
-function navigateAccQuestion(delta) {
-    const next = accCurrentIdx + delta;
-    if (next >= 0 && next < accCurrentQuestions.length) loadAccQuestion(next);
+function navAcc(d) {
+    const n = accCurrentIdx + d;
+    if (n >= 0 && n < accCurrentQuestions.length) loadAccQuestion(n);
 }
 
 function abortAccTest() {
-    if (!confirm('Прервать тест? Прогресс не сохранится.')) return;
+    if (!confirm('Прервать тест?')) return;
     if (accTimerInterval) { clearInterval(accTimerInterval); accTimerInterval = null; }
     accTestActive = false;
-    renderAccTestStartPage();
+    renderAccStart();
 }
 
-/* ===== ТЕСТ: ЗАВЕРШЕНИЕ ===== */
 function finishAccTest() {
     if (!accTestActive) return;
     accTestActive = false;
     if (accTimerInterval) { clearInterval(accTimerInterval); accTimerInterval = null; }
-
-    let correctCount = 0;
-    const details = accCurrentQuestions.map((q, idx) => {
-        const ok = checkAccAnswer(q, accUserAnswers[idx]);
-        if (ok) correctCount++;
-        return { q, userAns: accUserAnswers[idx], ok };
+    let correct = 0;
+    const details = accCurrentQuestions.map((q, i) => {
+        const ok = checkAcc(q, accUserAnswers[i]);
+        if (ok) correct++;
+        return { q, ua: accUserAnswers[i], ok };
     });
-
     const total = accCurrentQuestions.length;
-    const score = total ? Math.round(correctCount / total * 100) : 0;
-
-    let html = `
-        <div class="test-card">
-            <h2>Результат теста</h2>
-            <p>Правильных ответов: <strong>${correctCount} из ${total}</strong></p>
-            <p class="score-big">${score}%</p>
-            <button class="choice-btn" onclick="renderAccTestStartPage()">Пройти заново</button>
-        </div>
-        <div class="test-card">
-            <h3>Разбор ответов</h3>
-    `;
-
-    details.forEach((d, idx) => {
-        const cls = d.ok ? 'result-correct' : 'result-wrong';
-        const userStr = Array.isArray(d.userAns)
-            ? (d.userAns.length ? d.userAns.join(', ') : '—')
-            : (d.userAns && String(d.userAns).trim() !== '' ? d.userAns : '—');
-        html += `
-            <div class="result-item ${cls}">
-                <p><strong>${idx + 1}. ${d.q.text}</strong></p>
-                <p>Ваш ответ: ${userStr}</p>
-                <p>Правильный ответ: ${d.q.correctDisplay}</p>
-            </div>
-        `;
+    const score = total ? Math.round(correct / total * 100) : 0;
+    let html = `<div class="acc-test-card">
+        <h2>Результат</h2>
+        <p>Правильных: <strong>${correct} из ${total}</strong></p>
+        <p class="acc-score">${score}%</p>
+        <button class="acc-btn" onclick="renderAccStart()">Пройти заново</button>
+    </div><div class="acc-test-card"><h3>Разбор</h3>`;
+    details.forEach((d, i) => {
+        const cls = d.ok ? 'acc-result-ok' : 'acc-result-fail';
+        const ua = Array.isArray(d.ua) ? (d.ua.length ? d.ua.join(', ') : '—')
+                 : (d.ua && String(d.ua).trim() !== '' ? d.ua : '—');
+        html += `<div class="acc-result-item ${cls}">
+            <p><strong>${i + 1}. ${d.q.text}</strong></p>
+            <p>Ваш ответ: ${ua}</p>
+            <p>Правильный: ${d.q.correctDisplay}</p>
+        </div>`;
     });
-
     html += `</div>`;
     document.getElementById('accTestContainer').innerHTML = html;
 }
 
-function checkAccAnswer(q, userAnswer) {
-    if (userAnswer === undefined || userAnswer === null) return false;
-    if (q.type === 'single') {
-        return String(userAnswer).trim() === String(q.correct).trim();
-    }
+function checkAcc(q, ua) {
+    if (ua === undefined || ua === null) return false;
+    if (q.type === 'single') return String(ua).trim() === String(q.correct).trim();
     if (q.type === 'multi') {
-        if (!Array.isArray(userAnswer)) return false;
-        const correctArr = q.correct;
-        if (userAnswer.length !== correctArr.length) return false;
-        return correctArr.every(item => userAnswer.includes(item));
+        if (!Array.isArray(ua) || ua.length !== q.correct.length) return false;
+        return q.correct.every(x => ua.includes(x));
     }
     if (q.type === 'open') {
-        if (!Array.isArray(q.correct)) return false;
-        const normalized = String(userAnswer).trim().toLowerCase();
-        return q.correct.some(c => normalized === c.toLowerCase().trim());
+        const n = String(ua).trim().toLowerCase();
+        return q.correct.some(c => n === c.toLowerCase().trim());
     }
     return false;
 }
 
-/* ===== ЗАДАЧИ ===== */
-function renderAccountingTasks() {
-    const container = document.getElementById('accTasksContainer');
-    if (!container) return;
-
-    let html = `<h2 style="margin-bottom: 20px;">Практические задачи по учёту затрат</h2>`;
-    accountingTasks.forEach((task, i) => {
-        html += `
-            <div class="task-card">
-                <h3>${task.title}</h3>
-                <p>${task.condition.replace(/\n/g, '<br>')}</p>
-                <button class="choice-btn" style="margin-top: 15px; padding: 10px 20px;"
-                    onclick="toggleTaskSolution(${i})">
-                    <i class="fas fa-eye"></i> Показать / скрыть решение
-                </button>
-                <div id="task-solution-${i}" class="task-solution">
-                    <p><strong>Решение:</strong></p>
-                    <p>${task.solution.replace(/\n/g, '<br>')}</p>
-                </div>
+/* --- ЗАДАЧИ --- */
+function renderAccTasks() {
+    const c = document.getElementById('accTasksContainer');
+    if (!c) return;
+    c.innerHTML = accountingTasks.map((t, i) => `
+        <div class="acc-task">
+            <h3>${t.title}</h3>
+            <p>${t.condition.replace(/\n/g, '<br>')}</p>
+            <button class="acc-btn acc-btn-secondary" style="margin-top:12px;"
+                onclick="document.getElementById('acc-sol-${i}').classList.toggle('visible')">
+                Показать / скрыть решение
+            </button>
+            <div id="acc-sol-${i}" class="acc-solution">
+                <p><strong>Решение:</strong></p>
+                <p>${t.solution.replace(/\n/g, '<br>')}</p>
             </div>
-        `;
-    });
-    container.innerHTML = html;
-}
-
-function toggleTaskSolution(i) {
-    const el = document.getElementById(`task-solution-${i}`);
-    if (el) el.classList.toggle('visible');
+        </div>
+    `).join('');
 }
