@@ -1,135 +1,178 @@
-/* ========== ГЛАВНЫЙ ЭКРАН ВЫБОРА ========== */
-.landing-screen {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 80vh;
-    text-align: center;
-    padding: 20px;
-}
-.landing-header h1 {
-    font-size: 2.2rem;
-    margin-bottom: 10px;
-    color: var(--text-primary);
-}
-.landing-header p {
-    font-size: 1.1rem;
-    color: var(--text-secondary);
-    margin-bottom: 40px;
-}
-.choice-grid {
-    display: flex;
-    gap: 30px;
-    flex-wrap: wrap;
-    justify-content: center;
-    max-width: 900px;
-}
-.choice-card {
-    background: var(--card-dark);
-    border: 1px solid var(--border-dark);
-    border-radius: 24px;
-    padding: 40px 30px;
-    width: 350px;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-.choice-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    border-color: var(--accent);
-}
-.choice-card i {
-    font-size: 3.5rem;
-    color: var(--accent);
-    margin-bottom: 20px;
-}
-.choice-card h2 {
-    font-size: 1.6rem;
-    margin-bottom: 12px;
-}
-.choice-card p {
-    color: var(--text-secondary);
-    font-size: 0.95rem;
-    line-height: 1.5;
-    margin-bottom: 25px;
-    flex: 1;
-}
-.choice-btn {
-    background: var(--accent);
-    color: #0d1117;
-    border: none;
-    padding: 12px 30px;
-    border-radius: 40px;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-.choice-btn:hover {
-    background: var(--accent-hover);
-}
-.back-to-landing {
-    background: none;
-    border: 1px solid var(--border-dark);
-    color: var(--text-secondary);
-    padding: 8px 16px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: 0.2s;
-}
-.back-to-landing:hover {
-    border-color: var(--accent);
-    color: var(--accent);
+/* ===== ПЕРЕМЕННЫЕ ТЕМ ===== */
+:root {
+    --bg: #0d1117;
+    --bg-secondary: #161b22;
+    --card: #21262d;
+    --text: #e6edf3;
+    --text-secondary: #8b949e;
+    --border: #30363d;
+    --accent: #2ea043;
+    --accent-hover: #3fb950;
+    --danger: #f85149;
+    --success: #2ea043;
 }
 
-/* ========== РАЗДЕЛ УЧЁТА ЗАТРАТ ========== */
-.theory-content {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 20px;
+body.light-theme {
+    --bg: #f6f8fa;
+    --bg-secondary: #ffffff;
+    --card: #ffffff;
+    --text: #1f2328;
+    --text-secondary: #656d76;
+    --border: #d0d7de;
+    --accent: #1a7f37;
+    --accent-hover: #2ea043;
+    --danger: #cf222e;
+    --success: #1a7f37;
 }
-.theory-block {
-    background: var(--card-dark);
-    border: 1px solid var(--border-dark);
-    border-radius: 16px;
-    padding: 20px 25px;
-    margin-bottom: 20px;
-}
-.theory-block h3 {
-    color: var(--accent);
-    margin-bottom: 10px;
-    font-size: 1.2rem;
-}
-.theory-block p {
-    color: var(--text-secondary);
+
+/* ===== БАЗА ===== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Segoe UI', 'Open Sans', Tahoma, sans-serif;
+    background: var(--bg);
+    color: var(--text);
     line-height: 1.6;
+    transition: background 0.2s, color 0.2s;
 }
 
-/* Стили для теста и задач (могут пересекаться с существующими) */
-.test-start-card, .task-card {
-    background: var(--card-dark);
-    border: 1px solid var(--border-dark);
-    border-radius: 20px;
-    padding: 25px;
-    margin-bottom: 20px;
+.app-container { max-width: 1200px; margin: 0 auto; padding: 20px; min-height: 100vh; }
+
+/* ===== ГЛАВНЫЙ ЭКРАН ===== */
+.landing-screen {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 85vh; text-align: center; padding: 20px;
 }
-.test-start-card h2, .task-card h3 {
-    margin-bottom: 15px;
+.landing-header h1 { font-size: 2.2rem; margin-bottom: 10px; }
+.landing-header p { font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 40px; }
+.choice-grid { display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; max-width: 900px; }
+.choice-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 24px;
+    padding: 40px 30px; width: 350px; cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    display: flex; flex-direction: column; align-items: center; text-align: center;
 }
+.choice-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); border-color: var(--accent); }
+.choice-card i { font-size: 3.5rem; color: var(--accent); margin-bottom: 20px; }
+.choice-card h2 { font-size: 1.6rem; margin-bottom: 12px; }
+.choice-card p { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5; margin-bottom: 25px; flex: 1; }
+.choice-btn {
+    background: var(--accent); color: #fff; border: none; padding: 12px 30px;
+    border-radius: 40px; font-weight: 600; font-size: 1rem; cursor: pointer;
+    transition: background 0.2s; font-family: inherit;
+}
+.choice-btn:hover { background: var(--accent-hover); }
+.choice-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ===== HEADER ===== */
+.header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 15px 20px; background: var(--bg-secondary); border-radius: 16px;
+    margin-bottom: 20px; border: 1px solid var(--border); flex-wrap: wrap; gap: 15px;
+}
+.logo { display: flex; align-items: center; gap: 12px; }
+.logo i { font-size: 1.8rem; color: var(--accent); }
+.logo h1 { font-size: 1.3rem; font-weight: 600; }
+.header-buttons { display: flex; gap: 10px; align-items: center; }
+.theme-toggle {
+    background: var(--card); border: 1px solid var(--border); color: var(--text);
+    width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 1rem; transition: 0.2s;
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+.back-to-landing {
+    background: none; border: 1px solid var(--border); color: var(--text-secondary);
+    padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.9rem;
+    transition: 0.2s; font-family: inherit;
+}
+.back-to-landing:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ===== ВКЛАДКИ ===== */
+.tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 25px; padding: 0 5px; }
+.tab-btn {
+    background: var(--card); border: 1px solid var(--border); color: var(--text-secondary);
+    padding: 10px 20px; border-radius: 30px; cursor: pointer; font-size: 0.95rem;
+    font-family: inherit; transition: 0.2s; display: flex; align-items: center; gap: 8px;
+}
+.tab-btn:hover { border-color: var(--accent); color: var(--text); }
+.tab-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* ===== КОНТЕНТ ===== */
+.content-pane { display: none; animation: fadeIn 0.2s ease; }
+.content-pane.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ===== ТЕОРИЯ ===== */
+.theory-content { max-width: 900px; margin: 0 auto; }
+.theory-content > h2 { margin-bottom: 25px; font-size: 1.6rem; }
+.theory-block {
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    padding: 20px 25px; margin-bottom: 20px;
+}
+.theory-block h3 { color: var(--accent); margin-bottom: 10px; font-size: 1.2rem; }
+.theory-block p { color: var(--text-secondary); line-height: 1.7; }
+
+/* ===== ТЕСТ ===== */
+.test-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 25px; margin-bottom: 20px; }
+.test-card h2 { margin-bottom: 15px; }
+.test-card h3 { margin-bottom: 15px; font-size: 1.15rem; }
+.test-card p { color: var(--text-secondary); margin-bottom: 10px; }
+.test-card ul { margin: 15px 0 20px 25px; color: var(--text-secondary); }
+.test-card ul li { margin-bottom: 6px; }
+.test-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+.timer {
+    background: var(--bg); padding: 8px 16px; border-radius: 20px;
+    border: 1px solid var(--border); font-weight: 600; color: var(--accent);
+}
+.question-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.qnav-btn {
+    background: var(--card); border: 1px solid var(--border); color: var(--text-secondary);
+    width: 40px; height: 40px; border-radius: 10px; cursor: pointer; font-family: inherit;
+    font-weight: 600; transition: 0.2s;
+}
+.qnav-btn:hover { border-color: var(--accent); }
+.qnav-btn.answered { background: var(--success); color: #fff; border-color: var(--success); }
+.qnav-btn.current { border: 2px solid var(--accent); color: var(--text); }
+.option-label {
+    display: flex; align-items: flex-start; gap: 10px; padding: 12px 15px;
+    margin-bottom: 8px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 10px; cursor: pointer; transition: 0.15s;
+}
+.option-label:hover { border-color: var(--accent); }
+.option-label input { margin-top: 4px; accent-color: var(--accent); }
+.option-label.selected { border-color: var(--accent); background: rgba(46, 160, 67, 0.1); }
+.open-input {
+    width: 100%; padding: 12px 15px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--bg); color: var(--text); font-size: 1rem; font-family: inherit;
+}
+.open-input:focus { outline: none; border-color: var(--accent); }
+.test-nav { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+.result-correct { border-left: 4px solid var(--success) !important; }
+.result-wrong { border-left: 4px solid var(--danger) !important; }
+.result-item { padding: 12px 15px; background: var(--bg); border-radius: 8px; margin-bottom: 10px; }
+.result-item p { margin-bottom: 5px; color: var(--text-secondary); }
+.result-item p strong { color: var(--text); }
+.score-big { font-size: 2rem; color: var(--accent); font-weight: 700; margin: 15px 0; }
+
+/* ===== ЗАДАЧИ ===== */
+.task-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+    padding: 25px; margin-bottom: 20px;
+}
+.task-card h3 { margin-bottom: 15px; color: var(--accent); font-size: 1.2rem; }
+.task-card p { color: var(--text-secondary); line-height: 1.6; margin-bottom: 10px; }
 .task-solution {
-    margin-top: 15px;
-    padding: 15px;
-    background: var(--bg-dark);
-    border-radius: 12px;
-    border-left: 4px solid var(--success);
-    display: none;
+    margin-top: 15px; padding: 15px; background: var(--bg); border-radius: 12px;
+    border-left: 4px solid var(--success); display: none;
 }
-.task-solution.visible {
-    display: block;
+.task-solution.visible { display: block; }
+.task-solution p { color: var(--text-secondary); line-height: 1.7; }
+.task-solution strong { color: var(--text); }
+
+/* ===== АДАПТИВ ===== */
+@media (max-width: 600px) {
+    .landing-header h1 { font-size: 1.6rem; }
+    .choice-card { width: 100%; padding: 30px 20px; }
+    .logo h1 { font-size: 1rem; }
+    .header { padding: 12px; }
+    .tab-btn { padding: 8px 14px; font-size: 0.85rem; }
 }
