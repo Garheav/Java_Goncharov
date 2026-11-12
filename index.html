@@ -1,118 +1,126 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Крутой курс программирования на языке Java</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Учебный портал: Java и Учёт затрат</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-<div class="app-container">
-    <div class="header">
-        <div class="logo">
-            <i class="fab fa-java"></i>
-            <h1>Курс по языку программирования Java</h1>
-        </div>
-        <button class="theme-toggle" id="themeToggle" aria-label="Тёмная/светлая тема">
-            <i class="fas fa-moon"></i>
-        </button>
-    </div>
-
-    <div class="tabs">
-        <button class="tab-btn active" data-tab="home"><i class="fas fa-home"></i> Главная</button>
-        <button class="tab-btn" data-tab="lectures"><i class="fas fa-book"></i> Лекции</button>
-        <button class="tab-btn" data-tab="labs"><i class="fas fa-code"></i> Лабораторные</button>
-        <button class="tab-btn" data-tab="test"><i class="fas fa-question-circle"></i> Тест</button>
-    </div>
-
-    <div id="home" class="content-pane active">
-        <div class="hero">
-            <h2>Программирование на Java</h2>
-            <p>Один из самых востребованных языков в корпоративной разработке, бэкенде, Big Data и Android-экосистеме.</p>
-            <p>Java используется миллионами разработчиков по всему миру. Специалисты, владеющие Java, востребованы в ведущих IT-компаниях, банках, финтехе и облачных платформах. Язык остаётся актуальным более 25 лет и продолжает развиваться.</p>
-        </div>
-        <div class="stats-grid">
-            <div class="stat-card"><i class="fas fa-chart-line"></i><span>Топ-3 языка</span><small>по версии TIOBE</small></div>
-            <div class="stat-card"><i class="fas fa-globe"></i><span>3 млрд устройств</span><small>работают на Java</small></div>
-            <div class="stat-card"><i class="fas fa-cloud"></i><span>Enterprise, Big Data</span><small>стандарт индустрии</small></div>
-        </div>
-        <div class="annotation">
-            <h3>📌 О курсе</h3>
-            <p>Курс разработан для начинающих. Вы изучите синтаксис, ООП, массивы, строки, файлы, методы и создадите проект «Аграрный калькулятор». Всё на практике.</p>
-            <h4>Структура:</h4>
-            <ul>
-                <li>8 лекций</li>
-                <li>8 лабораторных + 3 занятия проекта</li>
-                <li>Итоговый тест (33 вопроса)</li>
-                <li>Учебный план и вопросы для самопроверки</li>
-            </ul>
-            <div class="progress-area">
-                <div><strong>📊 Прогресс изучения</strong></div>
-                <div class="progress-bar"><div class="progress-fill" id="globalProgressFill"></div></div>
-                <div id="globalProgressText">Открыто 0 из 0 документов</div>
+    <div class="app-container">
+        <!-- ГЛАВНЫЙ ЭКРАН ВЫБОРА -->
+        <div id="landingScreen" class="landing-screen">
+            <div class="landing-header">
+                <h1>Выберите направление обучения</h1>
+                <p>Два курса в одном портале</p>
             </div>
-            <button class="btn-primary" id="openPlanBtn"><i class="fas fa-file-alt"></i> Открыть учебный план</button>
-            <button class="btn-secondary" id="downloadAllBtn"><i class="fas fa-download"></i> Скачать все материалы (ZIP)</button>
-        </div>
-    </div>
-
-    <div id="lectures" class="content-pane">
-        <div class="search-bar">
-            <input type="text" id="lectureSearch" placeholder="Поиск лекций...">
-            <button id="clearLectureSearch"><i class="fas fa-times"></i></button>
-        </div>
-        <div id="lecturesList"><div class="grid-cards" id="lecturesGrid"></div></div>
-        <div id="lectureViewer" style="display: none;">
-            <div class="pdf-viewer">
-                <div class="nav-bar">
-                    <button class="nav-btn" id="prevLectureBtn"><i class="fas fa-chevron-left"></i> Предыдущая</button>
-                    <span id="currentLectureTitle" class="doc-title"></span>
-                    <button class="nav-btn" id="nextLectureBtn">Следующая <i class="fas fa-chevron-right"></i></button>
-                    <button class="fullscreen-btn" id="lectureFullscreen"><i class="fas fa-expand"></i> На весь экран</button>
-                    <button class="lab-btn" id="openLabFromLecture"><i class="fas fa-flask"></i> Лабораторная</button>
-                    <button class="back-btn" id="backToLecturesList">К списку</button>
+            <div class="choice-grid">
+                <!-- Карточка Java -->
+                <div class="choice-card" onclick="selectDirection('java')">
+                    <i class="fab fa-java"></i>
+                    <h2>Java</h2>
+                    <p>Программирование на Java: от основ до проекта «Аграрный калькулятор»</p>
+                    <button class="choice-btn">Перейти к курсу</button>
                 </div>
-                <iframe id="lectureFrame" title="Лекция"></iframe>
-            </div>
-        </div>
-    </div>
-
-    <div id="labs" class="content-pane">
-        <div id="labsList"><div class="grid-cards" id="labsGrid"></div></div>
-        <div id="labViewer" style="display: none;">
-            <div class="pdf-viewer">
-                <div class="nav-bar">
-                    <button class="nav-btn" id="prevLabBtn"><i class="fas fa-chevron-left"></i> Предыдущая</button>
-                    <span id="currentLabTitle" class="doc-title"></span>
-                    <button class="nav-btn" id="nextLabBtn">Следующая <i class="fas fa-chevron-right"></i></button>
-                    <button class="fullscreen-btn" id="labFullscreen"><i class="fas fa-expand"></i> На весь экран</button>
-                    <button class="back-btn" id="backToLabsList">К списку</button>
+                <!-- Карточка Учёта затрат -->
+                <div class="choice-card" onclick="selectDirection('accounting')">
+                    <i class="fas fa-seedling"></i>
+                    <h2>Учёт затрат в растениеводстве</h2>
+                    <p>Теория, тесты и практические задачи по управленческому учёту</p>
+                    <button class="choice-btn">Перейти к курсу</button>
                 </div>
-                <iframe id="labFrame" title="Лабораторная"></iframe>
+            </div>
+        </div>
+
+        <!-- КОНТЕЙНЕР ДЛЯ КУРСА JAVA (существующий функционал) -->
+        <div id="javaApp" style="display: none;">
+            <!-- Сюда вставляется весь ваш существующий код из index.html для Java -->
+            <!-- ... (существующая разметка Java) ... -->
+            <div class="header">
+                <div class="logo">
+                    <i class="fab fa-java"></i>
+                    <h1>Курс по языку программирования Java</h1>
+                </div>
+                <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
+                <button class="back-to-landing" onclick="backToLanding()"><i class="fas fa-arrow-left"></i> На главную</button>
+            </div>
+            <!-- ... остальной существующий HTML для Java ... -->
+            <!-- Например, ваши вкладки, контент и т.д. -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="home"><i class="fas fa-home"></i> Главная</button>
+                <button class="tab-btn" data-tab="lectures"><i class="fas fa-book"></i> Лекции</button>
+                <button class="tab-btn" data-tab="labs"><i class="fas fa-flask"></i> Лабораторные</button>
+                <button class="tab-btn" data-tab="test"><i class="fas fa-check-circle"></i> Тест</button>
+            </div>
+            <!-- Контент Java... -->
+            <div id="content-home" class="content-pane active">
+                <!-- Ваш существующий контент главной страницы Java -->
+            </div>
+            <!-- ... другие панели ... -->
+            <div id="testContainer"></div> <!-- Контейнер для теста Java -->
+        </div>
+
+        <!-- НОВЫЙ РАЗДЕЛ: УЧЁТ ЗАТРАТ В РАСТЕНИЕВОДСТВЕ -->
+        <div id="accountingApp" style="display: none;">
+            <div class="header">
+                <div class="logo">
+                    <i class="fas fa-seedling"></i>
+                    <h1>Учёт затрат в растениеводстве</h1>
+                </div>
+                <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
+                <button class="back-to-landing" onclick="backToLanding()"><i class="fas fa-arrow-left"></i> На главную</button>
+            </div>
+
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="acc-theory"><i class="fas fa-book-open"></i> Теория</button>
+                <button class="tab-btn" data-tab="acc-test"><i class="fas fa-question-circle"></i> Тест</button>
+                <button class="tab-btn" data-tab="acc-tasks"><i class="fas fa-calculator"></i> Задачи</button>
+            </div>
+
+            <!-- Панель теории (краткая выжимка из лекции) -->
+            <div id="acc-theory" class="content-pane active">
+                <div class="theory-content">
+                    <h2>Основы управленческого учёта затрат в растениеводстве</h2>
+                    <div class="theory-block">
+                        <h3>1. Понятие и сущность</h3>
+                        <p>Управленческий учёт — подсистема учёта, обеспечивающая менеджмент информацией для планирования, контроля и принятия решений. Ориентирован на внутренних пользователей, не регулируется жёстко государством.</p>
+                    </div>
+                    <div class="theory-block">
+                        <h3>2. Классификация затрат</h3>
+                        <p>Прямые и косвенные; основные и накладные; переменные и постоянные; производственные и коммерческие. Группировка по экономическим элементам и статьям калькуляции.</p>
+                    </div>
+                    <div class="theory-block">
+                        <h3>3. Отраслевые особенности растениеводства</h3>
+                        <p>Сезонность, длительный производственный цикл, зависимость от природно-климатических условий, биологические активы, незавершённое производство, несколько видов продукции с одного поля.</p>
+                    </div>
+                    <div class="theory-block">
+                        <h3>4. Объекты учёта и калькулирования</h3>
+                        <p>Объект учёта затрат: культура, поле, севооборот, бригада. Объект калькулирования: вид продукции. Калькуляционные единицы: 1 ц, 1 га, 1 тыс. руб.</p>
+                    </div>
+                    <div class="theory-block">
+                        <h3>5. Методы учёта затрат</h3>
+                        <p>Попроцессный, попередельный, позаказный, нормативный, «директ-костинг», ABC-метод.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Панель теста (рандомизированный) -->
+            <div id="acc-test" class="content-pane">
+                <div id="accTestContainer"></div>
+            </div>
+
+            <!-- Панель задач -->
+            <div id="acc-tasks" class="content-pane">
+                <div id="accTasksContainer"></div>
             </div>
         </div>
     </div>
 
-    <div id="test" class="content-pane">
-        <div id="testContainer"></div>
-    </div>
-
-    <footer>Гончаров М.Е. г. Воронеж 2026 г.</footer>
-</div>
-
-<div id="answersModal" class="answers-modal">
-    <div class="answers-content">
-        <h3>Правильные ответы на тест</h3>
-        <div id="answersList"></div>
-        <button class="close-modal-btn">Закрыть</button>
-    </div>
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-<script src="data.js"></script>
-<script src="script.js"></script>
+    <!-- Подключение данных и скриптов -->
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+    <!-- Новый скрипт для логики учёта затрат -->
+    <script src="accounting.js"></script>
 </body>
 </html>
