@@ -9,21 +9,20 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- ГЛАВНЫЙ ЭКРАН ВЫБОРА -->
+
+        <!-- ================= ГЛАВНЫЙ ЭКРАН ВЫБОРА ================= -->
         <div id="landingScreen" class="landing-screen">
             <div class="landing-header">
                 <h1>Выберите направление обучения</h1>
                 <p>Два курса в одном портале</p>
             </div>
             <div class="choice-grid">
-                <!-- Карточка Java -->
                 <div class="choice-card" onclick="selectDirection('java')">
                     <i class="fab fa-java"></i>
                     <h2>Java</h2>
                     <p>Программирование на Java: от основ до проекта «Аграрный калькулятор»</p>
                     <button class="choice-btn">Перейти к курсу</button>
                 </div>
-                <!-- Карточка Учёта затрат -->
                 <div class="choice-card" onclick="selectDirection('accounting')">
                     <i class="fas fa-seedling"></i>
                     <h2>Учёт затрат в растениеводстве</h2>
@@ -33,94 +32,135 @@
             </div>
         </div>
 
-        <!-- КОНТЕЙНЕР ДЛЯ КУРСА JAVA (существующий функционал) -->
-        <div id="javaApp" style="display: none;">
-            <!-- Сюда вставляется весь ваш существующий код из index.html для Java -->
-            <!-- ... (существующая разметка Java) ... -->
+        <!-- ================= JAVA APP ================= -->
+        <div id="javaApp" class="app-section" style="display: none;">
             <div class="header">
                 <div class="logo">
                     <i class="fab fa-java"></i>
                     <h1>Курс по языку программирования Java</h1>
                 </div>
-                <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
-                <button class="back-to-landing" onclick="backToLanding()"><i class="fas fa-arrow-left"></i> На главную</button>
+                <div class="header-buttons">
+                    <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
+                    <button class="back-to-landing" onclick="backToLanding()"><i class="fas fa-arrow-left"></i> На главную</button>
+                </div>
             </div>
-            <!-- ... остальной существующий HTML для Java ... -->
-            <!-- Например, ваши вкладки, контент и т.д. -->
-            <div class="tabs">
-                <button class="tab-btn active" data-tab="home"><i class="fas fa-home"></i> Главная</button>
-                <button class="tab-btn" data-tab="lectures"><i class="fas fa-book"></i> Лекции</button>
-                <button class="tab-btn" data-tab="labs"><i class="fas fa-flask"></i> Лабораторные</button>
-                <button class="tab-btn" data-tab="test"><i class="fas fa-check-circle"></i> Тест</button>
+
+            <div class="tabs" id="javaTabs">
+                <button class="tab-btn active" data-tab="java-home"><i class="fas fa-home"></i> Главная</button>
+                <button class="tab-btn" data-tab="java-lectures"><i class="fas fa-book"></i> Лекции</button>
+                <button class="tab-btn" data-tab="java-labs"><i class="fas fa-flask"></i> Лабораторные</button>
+                <button class="tab-btn" data-tab="java-test"><i class="fas fa-check-circle"></i> Тест</button>
             </div>
-            <!-- Контент Java... -->
-            <div id="content-home" class="content-pane active">
-                <!-- Ваш существующий контент главной страницы Java -->
+
+            <div id="java-home" class="content-pane active">
+                <div class="theory-block">
+                    <h3>Добро пожаловать на курс Java</h3>
+                    <p>Этот раздел — шаблон. Замените содержимое на ваш оригинальный Java-контент из репозитория.</p>
+                    <ul style="margin-top: 10px; padding-left: 20px; color: var(--text-secondary);">
+                        <li>Вкладка «Лекции» — теория по Java</li>
+                        <li>Вкладка «Лабораторные» — практические задания</li>
+                        <li>Вкладка «Тест» — проверка знаний</li>
+                    </ul>
+                </div>
             </div>
-            <!-- ... другие панели ... -->
-            <div id="testContainer"></div> <!-- Контейнер для теста Java -->
+
+            <div id="java-lectures" class="content-pane">
+                <div class="theory-block">
+                    <h3>Лекции по Java</h3>
+                    <p>Здесь разместите ваши лекции. Например: типы данных, ООП, коллекции, исключения.</p>
+                </div>
+            </div>
+
+            <div id="java-labs" class="content-pane">
+                <div class="theory-block">
+                    <h3>Лабораторные работы</h3>
+                    <p>Здесь разместите лабораторные задания по Java.</p>
+                </div>
+            </div>
+
+            <div id="java-test" class="content-pane">
+                <div id="javaTestContainer"></div>
+            </div>
         </div>
 
-        <!-- НОВЫЙ РАЗДЕЛ: УЧЁТ ЗАТРАТ В РАСТЕНИЕВОДСТВЕ -->
-        <div id="accountingApp" style="display: none;">
+        <!-- ================= ACCOUNTING APP ================= -->
+        <div id="accountingApp" class="app-section" style="display: none;">
             <div class="header">
                 <div class="logo">
                     <i class="fas fa-seedling"></i>
                     <h1>Учёт затрат в растениеводстве</h1>
                 </div>
-                <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
-                <button class="back-to-landing" onclick="backToLanding()"><i class="fas fa-arrow-left"></i> На главную</button>
+                <div class="header-buttons">
+                    <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
+                    <button class="back-to-landing" onclick="backToLanding()"><i class="fas fa-arrow-left"></i> На главную</button>
+                </div>
             </div>
 
-            <div class="tabs">
+            <div class="tabs" id="accountingTabs">
                 <button class="tab-btn active" data-tab="acc-theory"><i class="fas fa-book-open"></i> Теория</button>
                 <button class="tab-btn" data-tab="acc-test"><i class="fas fa-question-circle"></i> Тест</button>
                 <button class="tab-btn" data-tab="acc-tasks"><i class="fas fa-calculator"></i> Задачи</button>
             </div>
 
-            <!-- Панель теории (краткая выжимка из лекции) -->
             <div id="acc-theory" class="content-pane active">
                 <div class="theory-content">
                     <h2>Основы управленческого учёта затрат в растениеводстве</h2>
+
                     <div class="theory-block">
                         <h3>1. Понятие и сущность</h3>
-                        <p>Управленческий учёт — подсистема учёта, обеспечивающая менеджмент информацией для планирования, контроля и принятия решений. Ориентирован на внутренних пользователей, не регулируется жёстко государством.</p>
+                        <p>Управленческий учёт — подсистема учёта, обеспечивающая менеджмент информацией для планирования, контроля и принятия решений. Ориентирован на внутренних пользователей, не регулируется жёстко государством, может использовать данные финансового, налогового и статистического учёта.</p>
                     </div>
+
                     <div class="theory-block">
                         <h3>2. Классификация затрат</h3>
-                        <p>Прямые и косвенные; основные и накладные; переменные и постоянные; производственные и коммерческие. Группировка по экономическим элементам и статьям калькуляции.</p>
+                        <p>Прямые и косвенные; основные и накладные; переменные и постоянные; производственные и коммерческие. Группировка по экономическим элементам и статьям калькуляции. Классификация — основа аналитичности учёта и выявления резервов снижения себестоимости.</p>
                     </div>
+
                     <div class="theory-block">
                         <h3>3. Отраслевые особенности растениеводства</h3>
-                        <p>Сезонность, длительный производственный цикл, зависимость от природно-климатических условий, биологические активы, незавершённое производство, несколько видов продукции с одного поля.</p>
+                        <p>Сезонность, длительный производственный цикл, зависимость от природно-климатических условий, биологические активы, незавершённое производство, получение нескольких видов продукции с одного поля. Эти особенности определяют специфику учёта затрат.</p>
                     </div>
+
                     <div class="theory-block">
                         <h3>4. Объекты учёта и калькулирования</h3>
-                        <p>Объект учёта затрат: культура, поле, севооборот, бригада. Объект калькулирования: вид продукции. Калькуляционные единицы: 1 ц, 1 га, 1 тыс. руб.</p>
+                        <p>Объект учёта затрат: культура, группа культур, поле, севооборот, бригада, технологическая операция. Объект калькулирования: вид продукции. Калькуляционные единицы: 1 ц, 1 га, 1 тыс. руб., 1 т.</p>
                     </div>
+
                     <div class="theory-block">
-                        <h3>5. Методы учёта затрат</h3>
-                        <p>Попроцессный, попередельный, позаказный, нормативный, «директ-костинг», ABC-метод.</p>
+                        <h3>5. Состав затрат</h3>
+                        <p>Семена и посадочный материал, удобрения, средства защиты растений, ГСМ, оплата труда, амортизация, услуги сторонних организаций. Материальная направленность — ключевая черта растениеводства.</p>
+                    </div>
+
+                    <div class="theory-block">
+                        <h3>6. Методы учёта затрат</h3>
+                        <p>Попроцессный, попередельный, позаказный, нормативный, «директ-костинг», ABC-метод. Выбор метода зависит от особенностей производства и целей управления.</p>
+                    </div>
+
+                    <div class="theory-block">
+                        <h3>7. Методы калькулирования себестоимости</h3>
+                        <p>Простой, нормативный, позаказный, попередельный, метод исключения затрат, коэффициентный, пропорциональный. При нескольких видах продукции применяют коэффициентный или пропорциональный методы.</p>
+                    </div>
+
+                    <div class="theory-block">
+                        <h3>8. Роль в информационном обеспечении управления</h3>
+                        <p>Формирует данные о затратах, обеспечивает анализ себестоимости, создаёт базу для планирования, поддерживает контроль и оценку. В растениеводстве особенно важно из-за сезонности и многообразия продукции.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Панель теста (рандомизированный) -->
             <div id="acc-test" class="content-pane">
                 <div id="accTestContainer"></div>
             </div>
 
-            <!-- Панель задач -->
             <div id="acc-tasks" class="content-pane">
                 <div id="accTasksContainer"></div>
             </div>
         </div>
+
     </div>
 
-    <!-- Подключение данных и скриптов -->
     <script src="data.js"></script>
     <script src="script.js"></script>
-    <!-- Новый скрипт для логики учёта затрат -->
     <script src="accounting.js"></script>
 </body>
 </html>
