@@ -3,159 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Учебный портал: Java и Учёт затрат</title>
+    <title>Учебный портал</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="app-container">
 
-        <!-- ===== ГЛАВНЫЙ ЭКРАН ВЫБОРА ===== -->
-        <div id="landingScreen" class="landing-screen">
-            <div class="landing-header">
-                <h1>Выберите направление обучения</h1>
-                <p>Два курса в одном портале</p>
-            </div>
-            <div class="choice-grid">
-                <div class="choice-card" onclick="selectDirection('java')">
-                    <i class="fab fa-java"></i>
-                    <h2>Java</h2>
-                    <p>Программирование на Java: от основ до проекта «Аграрный калькулятор»</p>
-                    <button class="choice-btn">Перейти к курсу</button>
-                </div>
-                <div class="choice-card" onclick="selectDirection('accounting')">
-                    <i class="fas fa-seedling"></i>
-                    <h2>Учёт затрат в растениеводстве</h2>
-                    <p>Теория, тесты и практические задачи по управленческому учёту</p>
-                    <button class="choice-btn">Перейти к курсу</button>
-                </div>
-            </div>
+<!-- ============ ГЛАВНЫЙ ЭКРАН ============ -->
+<div id="landingScreen" style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; padding:40px 20px; gap:30px; text-align:center;">
+    <h1 style="margin:0;">Выберите раздел</h1>
+    <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center;">
+        <div onclick="showJavaApp()" class="landing-card">
+            <i class="fab fa-java" style="font-size:3rem; color:#f89820;"></i>
+            <h2>Java</h2>
+            <p>Основной курс</p>
         </div>
-
-        <!-- ===== JAVA APP ===== -->
-        <div id="javaApp" class="app-section" style="display: none;">
-            <div class="header">
-                <div class="logo">
-                    <i class="fab fa-java"></i>
-                    <h1>Курс по языку программирования Java</h1>
-                </div>
-                <div class="header-buttons">
-                    <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
-                    <button class="back-to-landing" onclick="backToLanding()"><i class="fas fa-arrow-left"></i> На главную</button>
-                </div>
-            </div>
-
-            <div class="tabs" id="javaTabs">
-                <button class="tab-btn active" data-tab="java-home"><i class="fas fa-home"></i> Главная</button>
-                <button class="tab-btn" data-tab="java-lectures"><i class="fas fa-book"></i> Лекции</button>
-                <button class="tab-btn" data-tab="java-labs"><i class="fas fa-flask"></i> Лабораторные</button>
-                <button class="tab-btn" data-tab="java-test"><i class="fas fa-check-circle"></i> Тест</button>
-            </div>
-
-            <div id="java-home" class="content-pane active">
-                <!-- ЗАМЕНИТЕ ЭТОТ БЛОК НА ВАШ ОРИГИНАЛЬНЫЙ JAVA-КОНТЕНТ -->
-                <div class="theory-block">
-                    <h3>Добро пожаловать на курс Java</h3>
-                    <p>Этот раздел — шаблон. Замените содержимое на ваш оригинальный Java-контент.</p>
-                </div>
-            </div>
-
-            <div id="java-lectures" class="content-pane">
-                <div class="theory-block">
-                    <h3>Лекции по Java</h3>
-                    <p>Здесь разместите ваши лекции.</p>
-                </div>
-            </div>
-
-            <div id="java-labs" class="content-pane">
-                <div class="theory-block">
-                    <h3>Лабораторные работы</h3>
-                    <p>Здесь разместите лабораторные задания.</p>
-                </div>
-            </div>
-
-            <div id="java-test" class="content-pane">
-                <div id="javaTestContainer"></div>
-            </div>
+        <div onclick="showAccountingApp()" class="landing-card">
+            <i class="fas fa-seedling" style="font-size:3rem; color:#2ea043;"></i>
+            <h2>Учёт затрат в растениеводстве</h2>
+            <p>Теория, тесты, задачи</p>
         </div>
-
-        <!-- ===== ACCOUNTING APP ===== -->
-        <div id="accountingApp" class="app-section" style="display: none;">
-            <div class="header">
-                <div class="logo">
-                    <i class="fas fa-seedling"></i>
-                    <h1>Учёт затрат в растениеводстве</h1>
-                </div>
-                <div class="header-buttons">
-                    <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
-                    <button class="back-to-landing" onclick="backToLanding()"><i class="fas fa-arrow-left"></i> На главную</button>
-                </div>
-            </div>
-
-            <div class="tabs" id="accountingTabs">
-                <button class="tab-btn active" data-tab="acc-theory"><i class="fas fa-book-open"></i> Теория</button>
-                <button class="tab-btn" data-tab="acc-test"><i class="fas fa-question-circle"></i> Тест</button>
-                <button class="tab-btn" data-tab="acc-tasks"><i class="fas fa-calculator"></i> Задачи</button>
-            </div>
-
-            <div id="acc-theory" class="content-pane active">
-                <div class="theory-content">
-                    <h2>Основы управленческого учёта затрат в растениеводстве</h2>
-
-                    <div class="theory-block">
-                        <h3>1. Понятие и сущность</h3>
-                        <p>Управленческий учёт — подсистема учёта, обеспечивающая менеджмент информацией для планирования, контроля и принятия решений. Ориентирован на внутренних пользователей, не регулируется жёстко государством.</p>
-                    </div>
-
-                    <div class="theory-block">
-                        <h3>2. Классификация затрат</h3>
-                        <p>Прямые и косвенные; основные и накладные; переменные и постоянные; производственные и коммерческие. Группировка по экономическим элементам и статьям калькуляции.</p>
-                    </div>
-
-                    <div class="theory-block">
-                        <h3>3. Отраслевые особенности растениеводства</h3>
-                        <p>Сезонность, длительный производственный цикл, зависимость от природно-климатических условий, биологические активы, незавершённое производство, несколько видов продукции с одного поля.</p>
-                    </div>
-
-                    <div class="theory-block">
-                        <h3>4. Объекты учёта и калькулирования</h3>
-                        <p>Объект учёта затрат: культура, группа культур, поле, севооборот, бригада. Объект калькулирования: вид продукции. Калькуляционные единицы: 1 ц, 1 га, 1 тыс. руб.</p>
-                    </div>
-
-                    <div class="theory-block">
-                        <h3>5. Состав затрат</h3>
-                        <p>Семена и посадочный материал, удобрения, средства защиты растений, ГСМ, оплата труда, амортизация, услуги сторонних организаций.</p>
-                    </div>
-
-                    <div class="theory-block">
-                        <h3>6. Методы учёта затрат</h3>
-                        <p>Попроцессный, попередельный, позаказный, нормативный, «директ-костинг», ABC-метод.</p>
-                    </div>
-
-                    <div class="theory-block">
-                        <h3>7. Методы калькулирования себестоимости</h3>
-                        <p>Простой, нормативный, позаказный, попередельный, метод исключения затрат, коэффициентный, пропорциональный.</p>
-                    </div>
-
-                    <div class="theory-block">
-                        <h3>8. Роль в информационном обеспечении управления</h3>
-                        <p>Формирует данные о затратах, обеспечивает анализ себестоимости, создаёт базу для планирования, поддерживает контроль и оценку.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div id="acc-test" class="content-pane">
-                <div id="accTestContainer"></div>
-            </div>
-
-            <div id="acc-tasks" class="content-pane">
-                <div id="accTasksContainer"></div>
-            </div>
-        </div>
-
     </div>
+</div>
 
-    <script src="data.js"></script>
-    <script src="script.js"></script>
+<!-- ============ JAVA APP (ЗАМЕНИ СВОИМ СТАРЫМ КОДОМ) ============ -->
+<div id="javaApp" style="display:none;">
+
+    <!-- ↓↓↓ ЗДЕСЬ ТВОЙ СТАРЫЙ JAVA-САЙТ ↓↓↓ -->
+    <div style="max-width:1100px; margin:0 auto; padding:20px;">
+        <h1>Курс по языку программирования Java</h1>
+        <p style="opacity:.7;">Замени этот блок своим оригинальным кодом: header, вкладки, лекции, лабораторные, PDF-ссылки, тест.</p>
+
+        <h2>Лекции (PDF)</h2>
+        <ul>
+            <li><a href="docs/lecture1.pdf" target="_blank">Лекция 1. Введение в Java</a></li>
+            <li><a href="docs/lecture2.pdf" target="_blank">Лекция 2. Типы данных</a></li>
+            <!-- ЗАМЕНИ ССЫЛКУ на свои PDF -->
+        </ul>
+
+        <h2>Лабораторные</h2>
+        <ul>
+            <li><a href="docs/lab1.pdf" target="_blank">Лабораторная 1</a></li>
+            <!-- ЗАМЕНИ ССЫЛКУ на свои PDF -->
+        </ul>
+
+        <h2>Тест</h2>
+        <div id="javaTestContainer"></div>
+    </div>
+    <!-- ↑↑↑ КОНЕЦ БЛОКА, КОТОРЫЙ НАДО ЗАМЕНИТЬ ↑↑↑ -->
+
+</div>
+
+<!-- ============ ACCOUNTING APP (НОВЫЙ РАЗДЕЛ, ГОТОВ) ============ -->
+<div id="accountingApp" style="display:none; max-width:1100px; margin:0 auto; padding:20px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+        <h1 style="margin:0;">Учёт затрат в растениеводстве</h1>
+    </div>
+    <div style="display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap;">
+        <button class="acc-tab-btn active" data-acc-tab="acc-theory">Теория</button>
+        <button class="acc-tab-btn" data-acc-tab="acc-test">Тест</button>
+        <button class="acc-tab-btn" data-acc-tab="acc-tasks">Задачи</button>
+    </div>
+    <div id="acc-theory" class="acc-pane active"></div>
+    <div id="acc-test" class="acc-pane"><div id="accTestContainer"></div></div>
+    <div id="acc-tasks" class="acc-pane"><div id="accTasksContainer"></div></div>
+</div>
+
+<!-- Кнопка «На главную» -->
+<button id="backToLandingBtn" onclick="backToLanding()" style="display:none; position:fixed; bottom:20px; left:20px; z-index:9999; padding:10px 18px; border-radius:20px; border:1px solid #555; background:#222; color:#eee; cursor:pointer; font-family:inherit;">← На главную</button>
+
+<script src="data.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
