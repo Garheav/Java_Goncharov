@@ -539,9 +539,56 @@ function initAccounting() {
 function renderAccTheory() {
     const c = document.getElementById('acc-theory');
     if (!c) return;
-    c.innerHTML = accountingTheory.map(b =>
+
+    const filename = 'Мет преп Гончаров.pptx';
+    const base = window.location.href.replace(/\/[^\/]*$/, '/');
+    const fileUrl = base + encodeURIComponent(filename);
+    const embedUrl = 'https://view.officeapps.live.com/op/embed.aspx?src=' + encodeURIComponent(fileUrl);
+    const isFileProtocol = window.location.protocol === 'file:';
+
+    let html = `
+        <div class="acc-presentation-block">
+            <div class="acc-presentation-header">
+                <div>
+                    <h2>📊 Презентация по теме</h2>
+                    <p class="acc-presentation-subtitle">Методические рекомендации преподавателя — «Мет преп Гончаров.pptx»</p>
+                </div>
+                <div class="acc-presentation-actions">
+                    <a href="${fileUrl}" download="${filename}" class="acc-btn">
+                        <i class="fas fa-download"></i> Скачать PPTX
+                    </a>
+                    <a href="${fileUrl}" target="_blank" rel="noopener" class="acc-btn acc-btn-secondary">
+                        <i class="fas fa-external-link-alt"></i> Открыть в новой вкладке
+                    </a>
+                </div>
+            </div>
+            ${isFileProtocol
+                ? `<div class="acc-presentation-warning">
+                       Просмотр встроенной презентации работает только на опубликованном сайте (GitHub Pages).
+                       Сейчас страница открыта локально — используйте кнопку «Скачать PPTX».
+                   </div>`
+                : `<div class="acc-presentation-frame">
+                       <iframe
+                           src="${embedUrl}"
+                           title="Презентация: Мет преп Гончаров.pptx"
+                           frameborder="0"
+                           allowfullscreen
+                           loading="lazy">
+                       </iframe>
+                   </div>
+                   <p class="acc-presentation-hint">
+                       Если презентация не отображается, подождите 5–10 секунд — Office Viewer загружает файл удалённо.
+                       В случае ошибки используйте кнопки выше.
+                   </p>`
+            }
+        </div>
+    `;
+
+    html += accountingTheory.map(b =>
         `<div class="acc-theory-block"><h3>${b.title}</h3><p>${b.text}</p></div>`
     ).join('');
+
+    c.innerHTML = html;
 }
 
 /* ---- Тест ---- */
