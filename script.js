@@ -519,7 +519,6 @@ function initAccounting() {
     if (accInitialized) return;
     accInitialized = true;
 
-    // Вкладки
     document.querySelectorAll('.acc-tab-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.acc-tab-btn').forEach(b => b.classList.remove('active'));
@@ -535,7 +534,7 @@ function initAccounting() {
     renderAccTasks();
 }
 
-/* ---- Теория ---- */
+/* ---- Теория (с презентацией) ---- */
 function renderAccTheory() {
     const c = document.getElementById('acc-theory');
     if (!c) return;
@@ -620,7 +619,7 @@ function renderAccTestStart() {
             <p>Проверка знаний теории управленческого учёта в растениеводстве.</p>
             <p><strong>Правила:</strong></p>
             <ul>
-                <li>Типы вопросов: одиночный выбор, множественный выбор, открытый ответ.</li>
+                <li>Типы вопросов: одиночный выбор, множественный выбор, открытый ответ, сопоставление.</li>
                 <li>Количество вопросов: ${ACC_QUESTION_COUNT} (случайная выборка из базы).</li>
                 <li>Время на выполнение: <strong>30 минут</strong>.</li>
                 <li>Отвеченные вопросы отмечаются зелёным.</li>
@@ -673,12 +672,19 @@ function renderAccTestUI() {
     loadAccQuestion(0);
 }
 
+function isAccAnswered(ans) {
+    if (ans === undefined || ans === null) return false;
+    if (Array.isArray(ans)) {
+        return ans.length > 0 && ans.every(v => v !== '' && v !== undefined && v !== null);
+    }
+    return String(ans).trim() !== '';
+}
+
 function renderAccQNav() {
     const nav = document.getElementById('accQuestionNav');
     if (!nav) return;
     nav.innerHTML = accCurrentQuestions.map((_, i) => {
-        const ans = accUserAnswers[i];
-        const answered = ans !== undefined && ans !== null && (Array.isArray(ans) ? ans.length > 0 : String(ans).trim() !== '');
+        const answered = isAccAnswered(accUserAnswers[i]);
         const cls = (i === accCurrentIdx ? 'active ' : '') + (answered ? 'answered' : '');
         return `<button class="acc-qnav-btn ${cls}" onclick="loadAccQuestion(${i})">${i + 1}</button>`;
     }).join('');
@@ -690,6 +696,7 @@ function loadAccQuestion(idx) {
     const q = accCurrentQuestions[idx];
     const c = document.getElementById('accQuestionContent');
     let html = `<div class="acc-question-text">Вопрос ${idx + 1}. ${escapeHtml(q.text)}</div><div class="acc-options">`;
+
     if (q.type === 'single') {
         q.options.forEach(opt => {
             const checked = accUserAnswers[idx] === opt;
@@ -707,10 +714,23 @@ function loadAccQuestion(idx) {
                 <span>${escapeHtml(opt)}</span>
             </label>`;
         });
+    } else if (q.type === 'matching') {
+        const arr = Array.isArray(accUserAnswers[idx]) ? accUserAnswers[idx] : [];
+        q.pairs.forEach((pair, i) => {
+            const selected = arr[i] || '';
+            html += `<div class="acc-matching-row">
+                <div class="acc-matching-left">${escapeHtml(pair.left)}</div>
+                <select class="acc-matching-select" onchange="saveAccMatching(${idx}, ${i}, this.value)">
+                    <option value="">— выберите —</option>
+                    ${q.pairs.map(p => `<option value="${escapeHtml(p.right)}" ${selected === p.right ? 'selected' : ''}>${escapeHtml(p.right)}</option>`).join('')}
+                </select>
+            </div>`;
+        });
     } else {
         const v = typeof accUserAnswers[idx] === 'string' ? accUserAnswers[idx] : '';
         html += `<input type="text" class="acc-open-input" placeholder="Введите ответ..." value="${escapeHtml(v)}" oninput="saveAccAnswer(${idx}, this.value)">`;
     }
+
     html += `</div><div class="acc-test-nav">
         <button class="acc-btn acc-btn-secondary" onclick="navigateAcc(-1)" ${idx === 0 ? 'disabled' : ''}>← Назад</button>
         ${idx === accCurrentQuestions.length - 1
@@ -743,6 +763,12 @@ function saveAccMultiAnswer(idx, val, checked) {
     renderAccQNav();
 }
 
+function saveAccMatching(idx, pairIdx, val) {
+    if (!Array.isArray(accUserAnswers[idx])) accUserAnswers[idx] = [];
+    accUserAnswers[idx][pairIdx] = val;
+    renderAccQNav();
+}
+
 function navigateAcc(delta) {
     const n = accCurrentIdx + delta;
     if (n >= 0 && n < accCurrentQuestions.length) loadAccQuestion(n);
@@ -759,6 +785,7 @@ function finishAccTest() {
     if (!accTestActive) return;
     accTestActive = false;
     if (accTimerInterval) { clearInterval(accTimerInterval); accTimerInterval = null; }
+
     let correct = 0;
     const details = accCurrentQuestions.map((q, i) => {
         const ok = checkAccAnswer(q, accUserAnswers[i]);
@@ -767,6 +794,7 @@ function finishAccTest() {
     });
     const total = accCurrentQuestions.length;
     const score = total ? Math.round(correct / total * 100) : 0;
+
     let html = `<div class="acc-test-card">
         <div class="acc-result-area">
             <h2>Результат</h2>
@@ -774,16 +802,26 @@ function finishAccTest() {
             <button class="acc-btn" onclick="renderAccTestStart()">Пройти заново</button>
         </div>
     </div><div class="acc-test-card"><h3>Разбор ответов</h3>`;
+
     details.forEach((d, i) => {
         const cls = d.ok ? 'ok' : 'fail';
-        const ua = Array.isArray(d.ua) ? (d.ua.length ? d.ua.join(', ') : '—')
-                 : (d.ua && String(d.ua).trim() !== '' ? d.ua : '—');
+        let userStr;
+        if (d.q.type === 'matching' && Array.isArray(d.ua)) {
+            userStr = d.q.pairs
+                .map((p, j) => `${p.left} → ${d.ua[j] || '—'}`)
+                .join('; ');
+        } else if (Array.isArray(d.ua)) {
+            userStr = d.ua.length ? d.ua.join(', ') : '—';
+        } else {
+            userStr = (d.ua && String(d.ua).trim() !== '') ? d.ua : '—';
+        }
         html += `<div class="acc-result-item ${cls}">
             <p><strong>${i + 1}. ${escapeHtml(d.q.text)}</strong></p>
-            <p>Ваш ответ: ${escapeHtml(ua)}</p>
+            <p>Ваш ответ: ${escapeHtml(userStr)}</p>
             <p>Правильный: ${escapeHtml(d.q.correctDisplay)}</p>
         </div>`;
     });
+
     html += `</div>`;
     document.getElementById('accTestContainer').innerHTML = html;
 }
@@ -798,6 +836,10 @@ function checkAccAnswer(q, ua) {
     if (q.type === 'open') {
         const n = String(ua).trim().toLowerCase();
         return q.correct.some(c => n === c.toLowerCase().trim());
+    }
+    if (q.type === 'matching') {
+        if (!Array.isArray(ua) || ua.length !== q.pairs.length) return false;
+        return q.pairs.every((p, j) => String(ua[j]).trim() === p.right.trim());
     }
     return false;
 }
