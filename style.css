@@ -533,3 +533,42 @@ footer {
     .acc-presentation-frame { height: 420px; }
     .acc-presentation-actions .acc-btn { padding: 8px 14px; font-size: 0.82rem; }
 }
+/* ============ ДОБАВЛЕНО: сопоставление в тесте ============ */
+
+.acc-matching-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+.acc-matching-left {
+    flex: 1 1 220px;
+    min-width: 180px;
+    font-weight: 600;
+    color: var(--text-primary);
+    padding: 10px 14px;
+    background: rgba(240, 136, 62, 0.06);
+    border-radius: 10px;
+    border-left: 3px solid var(--accent);
+}
+.acc-matching-select {
+    flex: 1 1 260px;
+    min-width: 220px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border-dark);
+    background: #0d1117;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 0.92rem;
+    cursor: pointer;
+}
+.acc-matching-select:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+.acc-matching-select option {
+    background: #0d1117;
+    color: var(--text-primary);
+}
