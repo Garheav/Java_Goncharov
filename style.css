@@ -459,3 +459,77 @@ footer {
 }
 .acc-solution.visible { display: block; }
 .acc-solution strong { color: var(--text-primary); }
+/* ============================================================ */
+/* ========== ДОБАВЛЕНО: ПРЕЗЕНТАЦИЯ В ТЕОРИИ ================= */
+/* ============================================================ */
+
+.acc-presentation-block {
+    background: var(--card-dark);
+    border: 1px solid var(--border-dark);
+    border-radius: 24px;
+    padding: 24px 26px;
+    margin-bottom: 24px;
+}
+.acc-presentation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+.acc-presentation-header h2 {
+    margin: 0 0 6px 0;
+    color: var(--accent);
+    font-size: 1.3rem;
+}
+.acc-presentation-subtitle {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+.acc-presentation-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.acc-presentation-actions .acc-btn {
+    text-decoration: none;
+    padding: 10px 18px;
+    font-size: 0.88rem;
+}
+.acc-presentation-frame {
+    position: relative;
+    width: 100%;
+    height: 620px;
+    background: #0d1117;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border-dark);
+}
+.acc-presentation-frame iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}
+.acc-presentation-hint {
+    margin: 12px 0 0 0;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+.acc-presentation-warning {
+    padding: 16px 20px;
+    border-radius: 14px;
+    background: rgba(240, 136, 62, 0.08);
+    border-left: 4px solid var(--accent);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+@media (max-width: 700px) {
+    .acc-presentation-frame { height: 420px; }
+    .acc-presentation-actions .acc-btn { padding: 8px 14px; font-size: 0.82rem; }
+}
